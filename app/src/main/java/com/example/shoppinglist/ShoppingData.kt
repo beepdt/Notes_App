@@ -1,4 +1,9 @@
 package com.example.shoppinglist
 
-class ShoppingData {
-}
+data class ShoppingData(
+    var itemName: String = "",
+    var itemQuantity: String = "",
+    var id: Int = 0,
+    var isEditing: Boolean = false,
+    var delete: Boolean = false
+)
