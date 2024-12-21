@@ -9,9 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -35,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -71,22 +73,28 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
         //main body
         content = {
             paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(Color(0xff434343), Color(0xff000000)),
-                        start = Offset(0f, 0f), // Top-left corner
-                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                    )
-                ),
-                contentPadding = paddingValues,
+            Column(Modifier
+                .background(brush = Brush.linearGradient(
+                    colors = listOf(Color(0xff434343), Color(0xff000000)),
+                    start = Offset(0f, 0f), // Top-left corner
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
+            ),) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
+                    contentPadding = paddingValues,
 
-            ){
-                items(items,key = {it.id}){
-                    item ->
-                    ShoppingItem(id = item.id, title = item.itemName, quantity = item.itemQuantity)
+                    ) {
+                    items(items, key = { it.id }) { item ->
+                        ShoppingItem(
+                            id = item.id,
+                            title = item.itemName,
+                            quantity = item.itemQuantity
+                        )
+                    }
                 }
             }
         },
@@ -96,14 +104,24 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
 
 
         //for adding new buttons
-        floatingActionButton = { FloatingActionButton(onClick = {
+        floatingActionButton = {
+                FloatingActionButton(onClick = {
+                    showDialog = true
 
-            showDialog = true
+            },
+                    containerColor = Color.White,
+                    modifier = Modifier.size(width = 64.dp, height = 64.dp)
+                ) {
+                    Box(
 
-        }) {
-            Icon(imageVector =
-            Icons.Filled.Add, contentDescription = "add new item")
-        }}
+                        Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(64.dp))
+                        .background(Color.Black),
+                        contentAlignment = Alignment.Center) {
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = "add new item",tint = Color.White, modifier = Modifier.size(48.dp))
+                    }
+            }}
 
 
 
@@ -154,23 +172,27 @@ fun ShoppingItem(
     onDelete: Boolean = false
 ){
     Box(modifier = Modifier
+        .clip(RoundedCornerShape(16.dp))
         .background(Color.White)
         .padding(8.dp)
         .fillMaxWidth()
         ){
         Column(Modifier.padding(8.dp)) {
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = title)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(imageVector = Icons.Filled.Edit, contentDescription = "edit")
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+
+            }
+            Row (verticalAlignment = Alignment.CenterVertically) {
+                Text(text = quantity)
+                Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(imageVector = Icons.Filled.Delete, contentDescription = "delete")
                 }
             }
-            Text(text = quantity)
         }
     }
 }
