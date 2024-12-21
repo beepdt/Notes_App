@@ -12,17 +12,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,7 +48,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ShoppingUI(viewModel: ShoppingViewmodel){
 
+    var showEdit by remember{ mutableStateOf(false) }
     var showDialog by remember{ mutableStateOf(false) } //for the alert dialog box
+
+    var editItemId by remember{ mutableStateOf(-1) }
     val items by remember{ derivedStateOf { viewModel.shoppingData }} //observe state of shoppingData data class
     var itemName by remember { mutableStateOf("") }
     var itemQuantity by remember { mutableStateOf("") }
@@ -59,7 +64,7 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
 
           TopAppBar(
               colors = topAppBarColors(
-                  containerColor = Color.DarkGray,
+                  containerColor = Color.Transparent,
                   titleContentColor = Color.White
               ),
               title = {
@@ -92,7 +97,14 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
                         ShoppingItem(
                             id = item.id,
                             title = item.itemName,
-                            quantity = item.itemQuantity
+                            quantity = item.itemQuantity,
+                            onEditing = {
+                                id,name,quantity ->
+                                editItemId = id
+                                itemName = name
+                                itemQuantity = quantity
+                                showEdit = true
+                            }
                         )
                     }
                 }
@@ -105,58 +117,119 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
 
         //for adding new buttons
         floatingActionButton = {
-                FloatingActionButton(onClick = {
-                    showDialog = true
-
-            },
-                    containerColor = Color.White,
-                    modifier = Modifier.size(width = 64.dp, height = 64.dp)
+                FloatingActionButton(
+                    onClick = {
+                        showDialog = true
+                              },
+                    containerColor = Color.DarkGray,
+                    modifier = Modifier.size(64.dp),
+                    shape = CircleShape
                 ) {
-                    Box(
-
-                        Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(64.dp))
-                        .background(Color.Black),
-                        contentAlignment = Alignment.Center) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = "add new item",tint = Color.White, modifier = Modifier.size(48.dp))
-                    }
+                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color.White, modifier = Modifier.size(32.dp))
             }}
 
 
 
     )
-
+//adding new item
     if (showDialog){
-        AlertDialog(onDismissRequest = { showDialog = false},
+        AlertDialog(
+
+            onDismissRequest = { showDialog = false},
+
             confirmButton = {
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
+                Column(modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center) {
                     Button(onClick = {
                         viewModel.addNewItem(
                             itemName = itemName,
                             itemQuantity = itemQuantity
                         )
-                    }) {
+                        showDialog = false
+                    },
+                        Modifier.fillMaxWidth()
+
+                        ) {
                         Text(text = "Save")
                     }
-                    Button(onClick = { showDialog = false}) {
+                    OutlinedButton(
+                        onClick = { showDialog = false},
+                        Modifier.fillMaxWidth()) {
                         Text(text = "Cancel")
                     }
                 }
                             },
             title = { Text(text = "Add new Item")},
+
             text = {
                 Column {
-                    OutlinedTextField(value = itemName, onValueChange = {itemName=it}, placeholder = { Text(
-                        text = "Item Name"
-                    )})
-                    OutlinedTextField(value = itemQuantity, onValueChange = { itemQuantity = it }, placeholder = {
-                        Text(text = "Quantity")
-                    })
+                    OutlinedTextField(
+                        value = itemName,
+                        onValueChange = {itemName=it},
+                        label = {Text(text = "Item Name")})
+                    OutlinedTextField(
+                        value = itemQuantity,
+                        onValueChange = { itemQuantity = it },
+                        label = {Text(text = "Quantity")})
                 }
-            }
+            },
+
+            containerColor = Color.DarkGray,
+            textContentColor = Color.White,
+            titleContentColor = Color.White
             )
+    }
+    
+    //editing item
+    if (showEdit){
+        AlertDialog(
+            onDismissRequest = { showEdit = false },
+            confirmButton = { 
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
+                    Button(
+                        onClick = { viewModel.editItem(
+                            id = editItemId,
+                            itemName = itemName,
+                            itemQuantity = itemQuantity
+                    )
+                            showEdit = false
+
+                        },
+
+                        modifier = Modifier.fillMaxWidth()
+
+                    ) {
+                        Text(text = "Confirm Edit")
+                    }
+                    OutlinedButton(
+                        onClick = { /*TODO*/ },
+
+                        modifier = Modifier.fillMaxWidth()
+                        ) {
+                        Text(text = "Cancel")
+                    }
+                }
+            },
+            title = { Text(text = "Edit")},
+            
+            text = {
+               Column {
+                   OutlinedTextField(
+                       value = itemName,
+                       onValueChange = { itemName = it },
+                       label = { Text(text = "Item Name") }
+                   )
+                   OutlinedTextField(
+                       value = itemQuantity,
+                       onValueChange = { itemQuantity = it },
+                       label = { Text(text = "Quantity") }
+                   )
+               }
+            },
+            containerColor = Color.DarkGray,
+            textContentColor = Color.White,
+            titleContentColor = Color.White
+        )
     }
 }
 
@@ -168,29 +241,30 @@ fun ShoppingItem(
     id: Int,
     title: String,
     quantity: String,
-    isEditing: Boolean = false,
+    onEditing: (Int,String,String) -> Unit,
     onDelete: Boolean = false
 ){
+
     Box(modifier = Modifier
         .clip(RoundedCornerShape(16.dp))
-        .background(Color.White)
+        .background(Color.DarkGray)
         .padding(8.dp)
         .fillMaxWidth()
         ){
         Column(Modifier.padding(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = title)
+                Text(text = title,color = Color.White)
                 Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "edit")
+                IconButton(onClick = {onEditing(id,title,quantity)}) {
+                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "edit",tint = Color.White)
                 }
 
             }
-            Row (verticalAlignment = Alignment.CenterVertically) {
-                Text(text = quantity)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = quantity,color = Color.White)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = { /*TODO*/ }) {
-                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "delete")
+                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "delete",tint = Color.White)
                 }
             }
         }

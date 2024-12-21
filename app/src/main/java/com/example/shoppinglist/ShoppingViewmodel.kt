@@ -16,6 +16,13 @@ class ShoppingViewmodel: ViewModel(){
         _shoppingData.add(ShoppingData(id = _id++, itemName = itemName, itemQuantity = itemQuantity))
     }
 
+    fun editItem(id:Int,itemName: String,itemQuantity: String){
+        val index = _shoppingData.indexOfFirst { it.id == id }
+        if(index != -1){
+            _shoppingData[index] = _shoppingData[index].copy(itemName = itemName, itemQuantity = itemQuantity)
+        }
+    }
+
 
 
 
