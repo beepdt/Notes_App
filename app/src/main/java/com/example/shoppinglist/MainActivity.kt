@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyApp(){
-    val shoppingViewModel : ShoppingViewmodel = viewModel()
-    ShoppingUI(viewModel = shoppingViewModel)
+    val notesViewModel : NotesViewModel = viewModel()
+    NotesUI(viewModel = notesViewModel)
 
 }
