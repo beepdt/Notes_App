@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,11 +16,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,6 +33,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -42,11 +47,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingUI(viewModel: ShoppingViewmodel){
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showEdit by remember{ mutableStateOf(false) }
     var showDialog by remember{ mutableStateOf(false) } //for the alert dialog box
@@ -59,19 +68,25 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
 
 
     Scaffold(
+
       topBar = {
 
 
           TopAppBar(
               colors = topAppBarColors(
-                  containerColor = Color.Transparent,
-                  titleContentColor = Color.White
+                  containerColor = Color.White,
               ),
               title = {
                   Row (verticalAlignment = Alignment.CenterVertically){
                       Text(text = "Shopping List")
                   }
-          })
+                      },
+
+              scrollBehavior = scrollBehavior
+
+
+
+              )
       },
 
 
@@ -79,22 +94,21 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
         content = {
             paddingValues ->
             Column(Modifier
-                .background(brush = Brush.linearGradient(
-                    colors = listOf(Color(0xff434343), Color(0xff000000)),
-                    start = Offset(0f, 0f), // Top-left corner
-                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                )
+                .background(
+                    Color.White
             ),) {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = 8.dp)
+                        .nestedScroll(scrollBehavior.nestedScrollConnection),
+
                     contentPadding = paddingValues,
 
                     ) {
                     items(items, key = { it.id }) { item ->
-                        ShoppingItem(
+                        ShoppingItemUI(
                             id = item.id,
                             title = item.itemName,
                             quantity = item.itemQuantity,
@@ -115,7 +129,7 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
 
 
 
-        //for adding new buttons
+        //for adding new items
         floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
@@ -127,6 +141,9 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
                 ) {
                     Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color.White, modifier = Modifier.size(32.dp))
             }}
+
+
+
 
 
 
@@ -166,6 +183,7 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
                     OutlinedTextField(
                         value = itemName,
                         onValueChange = {itemName=it},
+                        singleLine = true,
                         label = {Text(text = "Item Name")})
                     OutlinedTextField(
                         value = itemQuantity,
@@ -174,9 +192,7 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
                 }
             },
 
-            containerColor = Color.DarkGray,
-            textContentColor = Color.White,
-            titleContentColor = Color.White
+
             )
     }
     
@@ -226,9 +242,7 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
                    )
                }
             },
-            containerColor = Color.DarkGray,
-            textContentColor = Color.White,
-            titleContentColor = Color.White
+
         )
     }
 }
@@ -236,39 +250,111 @@ fun ShoppingUI(viewModel: ShoppingViewmodel){
 
 
 
+
+
 @Composable
-fun ShoppingItem(
+fun ShoppingItemUI(
     id: Int,
     title: String,
     quantity: String,
     onEditing: (Int,String,String) -> Unit,
     onDelete: Boolean = false
-){
+) {
 
     Box(modifier = Modifier
         .clip(RoundedCornerShape(16.dp))
         .background(Color.DarkGray)
         .padding(8.dp)
         .fillMaxWidth()
-        ){
-        Column(Modifier.padding(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = title,color = Color.White)
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = {onEditing(id,title,quantity)}) {
-                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "edit",tint = Color.White)
-                }
+    ){
 
+        var expanded by remember{ mutableStateOf(false) }
+
+        Row(
+            Modifier.fillMaxWidth()
+        ){
+
+            Column(
+                Modifier
+                    .weight(0.9f)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.Top,
+
+            )
+
+            {
+                Text(text = title,color = Color.White, fontSize = 24.sp, lineHeight = 32.sp)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = quantity,color = Color.White, fontSize = 16.sp)
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = quantity,color = Color.White)
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "delete",tint = Color.White)
+
+            Column(
+                Modifier
+                    .weight(0.1f)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                //used a box because menu rendered on top of icon button
+                Box {
+                    IconButton(onClick = { expanded = !expanded }) {
+                        Icon(
+                            imageVector = Icons.Rounded.MoreVert,
+                            contentDescription = "edit and delete options",
+                            tint = Color.White
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false })
+                    {
+                        //editing
+                        DropdownMenuItem(
+                            text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                                    Text(text = "Edit")
+
+                                    Spacer(modifier = Modifier.weight(1f))
+
+                                    Icon(
+                                        imageVector = Icons.Outlined.Edit,
+                                        contentDescription = "edit"
+                                    )
+
+                                }
+                                     },
+                            onClick = {
+                                onEditing(id,title,quantity)
+                                expanded = false
+                            })
+
+                        DropdownMenuItem(
+                            text = {
+
+                                Row (verticalAlignment = Alignment.CenterVertically){
+
+                                    Text(text = "Delete")
+
+                                    Spacer(modifier = Modifier.weight(1f))
+
+                                    Icon(
+                                        imageVector = Icons.Outlined.Delete,
+                                        contentDescription = "delete"
+                                    )
+
+                                }
+                            },
+                            onClick = { expanded = false })
+                    }
                 }
             }
+
         }
+
     }
+
 }
 
 
