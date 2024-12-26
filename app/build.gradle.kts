@@ -53,6 +53,9 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7") //viewmodel
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1") //system ui
+    implementation ("androidx.room:room-runtime:2.5.2")
+    implementation ("androidx.navigation:navigation-compose:2.7.2")
+
 
 
     implementation("androidx.core:core-ktx:1.15.0")
