@@ -6,21 +6,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -30,6 +28,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,10 +45,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 val Delete: ImageVector
     get() {
@@ -120,22 +119,34 @@ private var _Delete: ImageVector? = null
 @Composable
 fun NewNoteScreen(viewModel: NotesViewModel){
 
+    val systemUIController = rememberSystemUiController()
+    val statusBarColor = Color(0xffFCF6F1)
 
     var noteName by remember{ mutableStateOf("")}
     var noteText by remember { mutableStateOf("") }
     val scrollBehaviour = TopAppBarDefaults.pinnedScrollBehavior()
 
+    LaunchedEffect(Unit){
+    systemUIController.setStatusBarColor(
+        color = statusBarColor,
+        darkIcons = true
+    )}
+
     Scaffold (
-        
+
         topBar = {
             TopAppBar(
 
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xffFCF6F1),
+                    containerColor = statusBarColor,
                 ),
 
                 navigationIcon = {
-                    Box(modifier = Modifier.clip(CircleShape).background(Color(0xff111111))) {
+                    Box(modifier = Modifier
+                        .padding(8.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xff111111))
+                    ) {
                         IconButton(onClick = { /*TODO*/ }) {
                             Icon(
                                 imageVector = Icons.Rounded.ArrowBack,
@@ -145,7 +156,7 @@ fun NewNoteScreen(viewModel: NotesViewModel){
 
                         }
                     }
-                    
+
                 },
 
 
@@ -169,25 +180,27 @@ fun NewNoteScreen(viewModel: NotesViewModel){
                 scrollBehavior = scrollBehaviour
             )
         },
+        //containerColor = statusBarColor,
 
         content = {
             paddingValues ->
             Column(modifier = Modifier
+                .background(statusBarColor)
                 .padding(paddingValues)
-                .background(Color(0xffFCF6F1))
                 .fillMaxSize()) {
+
 
 
 
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp)
+                        .wrapContentHeight()
                         .padding(top = 16.dp, start = 8.dp, end = 8.dp),
                     value = noteName,
                     onValueChange = {noteName = it},
-                    singleLine = true,
-                    textStyle = TextStyle(fontSize = 30.sp),
+                    //singleLine = true,
+                    textStyle = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold),
                     placeholder = { Text(text = "note title")},
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color(0xff111111),
@@ -197,7 +210,7 @@ fun NewNoteScreen(viewModel: NotesViewModel){
                         unfocusedContainerColor = Color.Transparent,
                         unfocusedTextColor = Color.DarkGray,
                         unfocusedPlaceholderColor = Color.DarkGray,
-                        unfocusedIndicatorColor = Color.LightGray,
+                        unfocusedIndicatorColor = Color.DarkGray,
                         cursorColor = Color.DarkGray
                     )
 
@@ -206,6 +219,7 @@ fun NewNoteScreen(viewModel: NotesViewModel){
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .wrapContentHeight()
                         .padding(8.dp),
                     value = noteText,
                     onValueChange = {noteText = it},
@@ -227,53 +241,64 @@ fun NewNoteScreen(viewModel: NotesViewModel){
 
 
         bottomBar = {
-            BottomAppBar (
-                containerColor = Color(0xffFCF6F1),
+
+            BottomAppBar(
+                Modifier.background(Color.Transparent).height(80.dp),
+                containerColor = Color.Transparent,
+                tonalElevation = 0.dp,
                 content = {
-
                     Row(
                         modifier = Modifier
-                            .padding(8.dp)
-                            .clickable {
-                                viewModel.addNewNote(
-                                    noteName = noteName,
-                                    noteText = noteText
-                                )
-                            }
-                            .clip(RoundedCornerShape(16.dp))
-                            .weight(0.7f)
-                            .background(Color(0xffFFD5F8))
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.Center,
+                            .fillMaxWidth()
+                            .padding(start = 72.dp, end = 72.dp, bottom = 8.dp)
+                            .clip(RoundedCornerShape(48.dp)) // Rounded corners for the entire bar
+                            .background(Color(0xFF111111)), // Background for the segmented control
                         verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Text(text = "Save", textAlign = TextAlign.Center, color = Color(0xff111111), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    ) {
+                        // Save Button
+                        Box(
+                            modifier = Modifier
+                                .padding(start = 6.dp, top = 6.dp, bottom = 6.dp, end = 4.dp)
+                                .weight(0.5f)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(40.dp))
+                                .background(Color(0xFFC7EBB3)) // Green background for "Save"
+                                .clickable {
+                                    viewModel.addNewNote(
+                                        noteName = noteName,
+                                        noteText = noteText
+                                    )
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Save",
+                                color = Color(0xFF111111), // Text color for "Save"
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        // Delete Button
+                        Box(
+                            modifier = Modifier
+                                .padding(6.dp)
+                                //.weight(0.2f)
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xff323430)) // White background for "Delete"
+                                .clickable {
+                                    noteName = ""
+                                    noteText = ""
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(imageVector = Delete, contentDescription = "", tint = statusBarColor)
+                        }
                     }
-
-
-                    Row(
-                        modifier = Modifier
-                            .clickable {
-                                noteName = ""
-                                noteText = ""
-                            }
-                            .padding(8.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xff111111))
-                            .weight(0.2f)
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-
-                            Icon(imageVector = Delete, contentDescription = "", tint = Color(0xffFCF6F1))
-                        
-                    }
-
                 }
-            )
-        }
-        
+            )}
+
     )
 
 

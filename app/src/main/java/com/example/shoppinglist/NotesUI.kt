@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -42,6 +43,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,10 +61,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesUI(viewModel: NotesViewModel){
+
+    val systemUIController = rememberSystemUiController()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -73,6 +78,12 @@ fun NotesUI(viewModel: NotesViewModel){
     val notes by remember{ derivedStateOf { viewModel.notesData }} //observe state of shoppingData data class
     var noteName by remember { mutableStateOf("") }
     var noteText by remember { mutableStateOf("") }
+
+LaunchedEffect(Unit){
+    systemUIController.setStatusBarColor(
+        color = Color(0xffFCF6F1),
+        darkIcons = true
+    )}
 
 
 
@@ -146,11 +157,12 @@ fun NotesUI(viewModel: NotesViewModel){
                     onClick = {
                         showDialog = true
                               },
-                    containerColor = Color(0xffFFD5F8),
+                    containerColor = Color(0xff111111),
                     modifier = Modifier.size(64.dp),
                     shape = CircleShape
                 ) {
-                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color(0xff111111), modifier = Modifier.size(32.dp))
+                    Box(modifier = Modifier.clip(CircleShape).background(Color(0xff323430)).size(48.dp))
+                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color(0xffFCF6F1), modifier = Modifier.size(24.dp))
             }}
 
 
