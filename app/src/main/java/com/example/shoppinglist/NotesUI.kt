@@ -49,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -82,12 +83,12 @@ fun NotesUI(viewModel: NotesViewModel){
 
           TopAppBar(
               colors = topAppBarColors(
-                  containerColor = Color(0xFFFFFEE9),
+                  containerColor =Color(0xffFCF6F1),
               ),
 
               title = {
                   Row (verticalAlignment = Alignment.CenterVertically){
-                      Text(text = "my notes.", fontWeight = FontWeight.Bold, color = Color.Black)
+                      Text(text = "my notes.", fontWeight = FontWeight.Bold, color = Color(0xff111111))
                   }
                       },
 
@@ -104,13 +105,13 @@ fun NotesUI(viewModel: NotesViewModel){
             paddingValues ->
             Column(Modifier
                 .background(
-                    Color(0xFFFFFEE9)
+                    Color(0xffFCF6F1)
             ),) {
                 LazyColumn(
                     //verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
                         .nestedScroll(scrollBehavior.nestedScrollConnection),
 
                     contentPadding = paddingValues,
@@ -145,11 +146,11 @@ fun NotesUI(viewModel: NotesViewModel){
                     onClick = {
                         showDialog = true
                               },
-                    containerColor = Color.DarkGray,
+                    containerColor = Color(0xffFFD5F8),
                     modifier = Modifier.size(64.dp),
                     shape = CircleShape
                 ) {
-                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color.White, modifier = Modifier.size(32.dp))
+                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color(0xff111111), modifier = Modifier.size(32.dp))
             }}
 
 
@@ -341,15 +342,15 @@ fun NotesItemUI(
 ) {
 
     var boxExpanded by remember{ mutableStateOf(false) }
-    val boxHeight by animateDpAsState(targetValue = if (boxExpanded) Dp.Unspecified else 200.dp,
+    val boxHeight by animateDpAsState(targetValue = if (boxExpanded) Dp.Unspecified else 120.dp,
         label = "Box Height Animation"
     )//dynamic box height
 
     Box(modifier = Modifier
-        //.clip(RoundedCornerShape(16.dp))
-        .background(Color(0xFFFFFEE9))
-        .border(width = 0.5.dp, color = Color.LightGray)
-        .padding(8.dp)
+        .padding(vertical = 8.dp)
+        .clip(RoundedCornerShape(8.dp))
+        .background(Color(0xFFC7EBB3))
+        //.border(width = 0.5.dp, color = Color.LightGray)
         .fillMaxWidth()
         .then(if (boxExpanded) Modifier.wrapContentHeight() else Modifier.height(boxHeight))
         .clickable { boxExpanded = !boxExpanded }
@@ -364,7 +365,7 @@ fun NotesItemUI(
             Column(
                 Modifier
                     .weight(0.9f)
-                    .padding(8.dp),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.Top,
 
             )
