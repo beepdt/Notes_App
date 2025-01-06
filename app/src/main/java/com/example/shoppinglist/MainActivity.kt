@@ -9,6 +9,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.shoppinglist.ui.theme.ShoppingListTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NewNoteScreen(viewModel = NotesViewModel())
+                   MyApp()
                 }
             }
         }
@@ -31,6 +34,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(){
     val notesViewModel : NotesViewModel = viewModel()
-    NotesUI(viewModel = notesViewModel)
+    NotesUI(viewModel = notesViewModel, navController = rememberNavController())
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "home"){
+        composable("home"){ NotesUI(viewModel = NotesViewModel(),navController)}
+        composable("new note"){ NewNoteScreen(viewModel = NotesViewModel(), navController)}
+    }
 
 }

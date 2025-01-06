@@ -1,8 +1,6 @@
 package com.example.shoppinglist
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -58,14 +55,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotesUI(viewModel: NotesViewModel){
+fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
 
     val systemUIController = rememberSystemUiController()
 
@@ -98,8 +96,15 @@ LaunchedEffect(Unit){
               ),
 
               title = {
-                  Row (verticalAlignment = Alignment.CenterVertically){
-                      Text(text = "my notes.", fontWeight = FontWeight.Bold, color = Color(0xff111111))
+                  Row (
+                      Modifier
+                          .fillMaxWidth()
+                          .padding(end = 8.dp),
+                      verticalAlignment = Alignment.CenterVertically,
+                      horizontalArrangement = Arrangement.End
+
+                      ){
+                      Text(text = "notes.", fontWeight = FontWeight.Bold, color = Color(0xff111111))
                   }
                       },
 
@@ -155,13 +160,16 @@ LaunchedEffect(Unit){
         floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                        showDialog = true
+                        navController.navigate("new note")
                               },
                     containerColor = Color(0xff111111),
                     modifier = Modifier.size(64.dp),
                     shape = CircleShape
                 ) {
-                    Box(modifier = Modifier.clip(CircleShape).background(Color(0xff323430)).size(48.dp))
+                    Box(modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Color(0xff323430))
+                        .size(48.dp))
                     Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color(0xffFCF6F1), modifier = Modifier.size(24.dp))
             }}
 
@@ -354,9 +362,8 @@ fun NotesItemUI(
 ) {
 
     var boxExpanded by remember{ mutableStateOf(false) }
-    val boxHeight by animateDpAsState(targetValue = if (boxExpanded) Dp.Unspecified else 120.dp,
-        label = "Box Height Animation"
-    )//dynamic box height
+    //val boxHeight by animateDpAsState(targetValue = if (boxExpanded) Dp.Unspecified else Dp.Unspecified,
+       // label = "Box Height Animation" )//dynamic box height
 
     Box(modifier = Modifier
         .padding(vertical = 8.dp)
@@ -364,7 +371,7 @@ fun NotesItemUI(
         .background(Color(0xFFC7EBB3))
         //.border(width = 0.5.dp, color = Color.LightGray)
         .fillMaxWidth()
-        .then(if (boxExpanded) Modifier.wrapContentHeight() else Modifier.height(boxHeight))
+        .wrapContentHeight()
         .clickable { boxExpanded = !boxExpanded }
     ){
 
@@ -383,7 +390,7 @@ fun NotesItemUI(
             )
 
             {
-                Text(text = title,
+                Text(text =if (title=="")"Untitled" else title,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     fontSize = 32.sp,
@@ -483,7 +490,7 @@ fun NotesItemUI(
 @Composable
 @Preview
 fun NotesUIPreview(){
-    NotesUI(viewModel = NotesViewModel())
+    NotesUI(viewModel = NotesViewModel(), navController = rememberNavController())
 }
 
 

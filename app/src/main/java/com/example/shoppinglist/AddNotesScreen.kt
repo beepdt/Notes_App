@@ -5,18 +5,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,6 +50,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 val Delete: ImageVector
@@ -117,7 +121,7 @@ private var _Delete: ImageVector? = null
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewNoteScreen(viewModel: NotesViewModel){
+fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
 
     val systemUIController = rememberSystemUiController()
     val statusBarColor = Color(0xffFCF6F1)
@@ -147,7 +151,7 @@ fun NewNoteScreen(viewModel: NotesViewModel){
                         .clip(CircleShape)
                         .background(Color(0xff111111))
                     ) {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { navController.popBackStack()}) {
                             Icon(
                                 imageVector = Icons.Rounded.ArrowBack,
                                 contentDescription = "back",
@@ -201,7 +205,7 @@ fun NewNoteScreen(viewModel: NotesViewModel){
                     onValueChange = {noteName = it},
                     //singleLine = true,
                     textStyle = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold),
-                    placeholder = { Text(text = "note title")},
+                    placeholder = { Text(text = "Title")},
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color(0xff111111),
                         focusedContainerColor = Color.Transparent,
@@ -223,7 +227,8 @@ fun NewNoteScreen(viewModel: NotesViewModel){
                         .padding(8.dp),
                     value = noteText,
                     onValueChange = {noteText = it},
-                    placeholder = { Text(text = "description")},
+                    textStyle = TextStyle(fontSize = 16.sp),
+                    placeholder = { Text(text = "Note")},
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color(0xff111111),
                         focusedContainerColor = Color.Transparent,
@@ -243,14 +248,17 @@ fun NewNoteScreen(viewModel: NotesViewModel){
         bottomBar = {
 
             BottomAppBar(
-                Modifier.background(Color.Transparent).height(80.dp),
+                Modifier
+                    .background(Color.Transparent)
+                    .height(80.dp),
                 containerColor = Color.Transparent,
+                contentPadding = PaddingValues(start = 72.dp, end = 72.dp, bottom = 8.dp, top = 0.dp),
                 tonalElevation = 0.dp,
                 content = {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 72.dp, end = 72.dp, bottom = 8.dp)
+                            .fillMaxSize()
+                            //.padding(start = 72.dp, end = 72.dp, bottom = 8.dp, top = 0.dp)
                             .clip(RoundedCornerShape(48.dp)) // Rounded corners for the entire bar
                             .background(Color(0xFF111111)), // Background for the segmented control
                         verticalAlignment = Alignment.CenterVertically
@@ -279,12 +287,12 @@ fun NewNoteScreen(viewModel: NotesViewModel){
                             )
                         }
 
-                        // Delete Button
+                        // reset Button
                         Box(
                             modifier = Modifier
                                 .padding(6.dp)
-                                //.weight(0.2f)
-                                .size(56.dp)
+                                .fillMaxHeight()
+                                .aspectRatio(1f)
                                 .clip(CircleShape)
                                 .background(Color(0xff323430)) // White background for "Delete"
                                 .clickable {
@@ -293,7 +301,7 @@ fun NewNoteScreen(viewModel: NotesViewModel){
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(imageVector = Delete, contentDescription = "", tint = statusBarColor)
+                            Icon(imageVector = Icons.Rounded.Refresh, contentDescription = "", tint = statusBarColor)
                         }
                     }
                 }
@@ -310,7 +318,7 @@ fun NewNoteScreen(viewModel: NotesViewModel){
 @Composable
 @Preview
 fun NewNoteScreenPreview(){
-    NewNoteScreen(viewModel = NotesViewModel())
+    NewNoteScreen(viewModel = NotesViewModel(), navController = rememberNavController())
 }
 
 
