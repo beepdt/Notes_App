@@ -36,9 +36,10 @@ fun MyApp(){
     val notesViewModel : NotesViewModel = viewModel()
     NotesUI(viewModel = notesViewModel, navController = rememberNavController())
     val navController = rememberNavController()
+
     NavHost(navController = navController, startDestination = "home"){
-        composable("home"){ NotesUI(viewModel = NotesViewModel(),navController)}
-        composable("new note"){ NewNoteScreen(viewModel = NotesViewModel(), navController)}
+        composable("home"){ NotesUI(viewModel = notesViewModel,navController)}
+        composable("new note"){ NewNoteScreen(viewModel = notesViewModel, navController)}
     }
 
 }

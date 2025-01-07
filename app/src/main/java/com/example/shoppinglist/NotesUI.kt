@@ -73,7 +73,7 @@ fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
     var showDialog by remember{ mutableStateOf(false) } //for the alert dialog box
 
     var editNoteId by remember{ mutableStateOf(-1) }
-    val notes by remember{ derivedStateOf { viewModel.notesData }} //observe state of shoppingData data class
+   val notes = viewModel.notesData //observe state of shoppingData data class
     var noteName by remember { mutableStateOf("") }
     var noteText by remember { mutableStateOf("") }
 
@@ -179,88 +179,6 @@ LaunchedEffect(Unit){
 
 
     )
-//adding new item
-    if (showDialog){
-        AlertDialog(
-
-            onDismissRequest = {
-                showDialog = false
-                noteName = ""
-                noteText = ""
-                               },
-
-            confirmButton = {
-                Column(modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center) {
-                    Button(onClick = {
-                        viewModel.addNewNote(
-                            noteName = noteName,
-                            noteText = noteText
-                        )
-                        showDialog = false
-                        noteName = ""
-                        noteText = ""
-                    },
-                        Modifier.fillMaxWidth(),
-
-                        colors = ButtonDefaults.buttonColors(Color.Black)
-
-                        ) {
-                        Text(text = "Save",color = Color(0xFFFFFFE3))
-                    }
-                    OutlinedButton(
-                        onClick = {
-                            showDialog = false
-                            noteName = ""
-                            noteText = ""
-                                  },
-                        Modifier.fillMaxWidth()) {
-                        Text(text = "Cancel",color = Color.Black)
-                    }
-                }
-                            },
-            title = { Text(text = "New Note",color = Color.Black)},
-
-            text = {
-                Column {
-                    OutlinedTextField(
-                        value = noteName,
-                        onValueChange = {noteName=it},
-                        singleLine = true,
-                        label = {Text(text = "note title",color = Color.DarkGray)},
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Black,
-                            focusedLabelColor = Color.Black,
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.DarkGray,
-                            cursorColor = Color.Black
-                        )
-                        )
-                    OutlinedTextField(
-                        value = noteText,
-                        onValueChange = { noteText = it },
-                        label = {Text(text = "text",color = Color.DarkGray)},
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Black,
-                            focusedLabelColor = Color.Black,
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.DarkGray,
-                            cursorColor = Color.Black
-                        )
-                        )
-                }
-            },
-            containerColor = Color(0xFFFFFFE3),
-            tonalElevation = 8.dp,
-            modifier = Modifier.shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(24.dp),
-                clip = false
-            )
-
-
-            )
-    }
     
     //editing item
     if (showEdit){

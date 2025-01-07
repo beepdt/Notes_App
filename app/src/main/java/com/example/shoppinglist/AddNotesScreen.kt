@@ -151,7 +151,7 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                         .clip(CircleShape)
                         .background(Color(0xff111111))
                     ) {
-                        IconButton(onClick = { navController.popBackStack()}) {
+                        IconButton(onClick = { navController.navigate("home")}) {
                             Icon(
                                 imageVector = Icons.Rounded.ArrowBack,
                                 contentDescription = "back",
@@ -276,6 +276,9 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                                         noteName = noteName,
                                         noteText = noteText
                                     )
+                                    noteName=""
+                                    noteText=""
+                                    navController.navigate("home")
                                 },
                             contentAlignment = Alignment.Center
                         ) {
