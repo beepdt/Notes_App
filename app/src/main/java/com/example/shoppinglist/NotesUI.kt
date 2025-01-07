@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,7 +23,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -41,7 +45,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -171,7 +174,10 @@ LaunchedEffect(Unit){
                         .background(Color(0xff323430))
                         .size(48.dp))
                     Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color(0xffFCF6F1), modifier = Modifier.size(24.dp))
-            }}
+            }
+        },
+
+
 
 
 
@@ -302,7 +308,7 @@ fun NotesItemUI(
             Column(
                 Modifier
                     .weight(0.9f)
-                    .padding(16.dp),
+                    .padding(top = 32.dp, start = 24.dp, bottom = 32.dp),
                 verticalArrangement = Arrangement.Top,
 
             )
@@ -319,7 +325,7 @@ fun NotesItemUI(
                     color = Color.Black,
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
-                    maxLines = if (boxExpanded) Int.MAX_VALUE else 3,
+                    maxLines = if (boxExpanded) Int.MAX_VALUE else 6,
                     overflow = TextOverflow.Ellipsis
                     )
             }
@@ -327,7 +333,7 @@ fun NotesItemUI(
             Column(
                 Modifier
                     .weight(0.1f)
-                    .padding(8.dp),
+                    .padding(top = 24.dp, end = 8.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
                 ) {

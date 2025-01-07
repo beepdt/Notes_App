@@ -6,21 +6,24 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,11 +48,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditNoteScreen(viewModel: NotesViewModel){
+fun EditNoteScreen(viewModel: NotesViewModel,navController:NavHostController){
 
     val systemUIController = rememberSystemUiController()
     val statusBarColor = Color(0xffFCF6F1)
@@ -58,6 +64,8 @@ fun EditNoteScreen(viewModel: NotesViewModel){
     var noteName by remember{ mutableStateOf("")}
     var noteText by remember { mutableStateOf("") }
     val scrollBehaviour = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollState = rememberScrollState()
+    
 
     LaunchedEffect(Unit){
         systemUIController.setStatusBarColor(
@@ -119,7 +127,10 @@ fun EditNoteScreen(viewModel: NotesViewModel){
                 paddingValues ->
             Column(modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()) {
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+
+            ) {
 
 
 
@@ -151,11 +162,12 @@ fun EditNoteScreen(viewModel: NotesViewModel){
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(8.dp),
+                        .padding(horizontal = 8.dp)
+                        .padding(top = 8.dp),
                     value = noteText,
-                    onValueChange = {noteText = it},
+                    onValueChange = { noteText = it },
                     textStyle = TextStyle(fontSize = 16.sp),
-                    placeholder = { Text(text = "Note")},
+                    placeholder = { Text(text = "Note") },
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color(0xff111111),
                         focusedContainerColor = Color.Transparent,
@@ -168,86 +180,93 @@ fun EditNoteScreen(viewModel: NotesViewModel){
                         unfocusedIndicatorColor = Color.Transparent
                     )
                 )
+
+                Spacer(modifier = Modifier
+                    .height(80.dp))
+
             }
         },
 
+        floatingActionButton = {
 
-        bottomBar = {
-            BottomAppBar(
-                Modifier.background(Color.Transparent).height(80.dp),
-                containerColor = Color.Transparent,
-                contentPadding = PaddingValues(start = 72.dp, end = 72.dp, bottom = 8.dp, top = 0.dp),
-                tonalElevation = 0.dp,
-                content = {
-                    Row(
+            Row(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(horizontal = 72.dp)
+                    .height(64.dp)
+                    .clip(RoundedCornerShape(48.dp))
+                    .background(Color(0xFF111111)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Row {
+
+                    //save
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            //.padding(start = 72.dp, end = 72.dp, bottom = 8.dp, top = 0.dp)
-                            .clip(RoundedCornerShape(48.dp)) // Rounded corners for the entire bar
-                            .background(Color(0xFF111111)), // Background for the segmented control
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(6.dp)
+                            .fillMaxHeight()
+                            .width(100.dp)
+                            //.weight(0.5f)
+                            .clip(RoundedCornerShape(40.dp))
+                            .background(Color(0xFFC7EBB3))
+                            .clickable {
+                                viewModel.addNewNote(
+                                    noteName = noteName,
+                                    noteText = noteText
+                                )
+                                noteName = ""
+                                noteText = ""
+                                navController.navigate("home")
+                            },
+                        contentAlignment = Alignment.Center
                     ) {
-                        // Save Button
-                        Box(
-                            modifier = Modifier
-                                .padding(start = 6.dp, top = 6.dp, bottom = 6.dp, end = 4.dp)
-                                .weight(0.5f)
-                                .fillMaxHeight()
-                                .clip(RoundedCornerShape(40.dp))
-                                .background(Color(0xFFC7EBB3)) // Green background for "Save"
-                                .clickable {
-                                    viewModel.editNote(
-                                        id = editNoteId,
-                                        noteName = noteName,
-                                        noteText = noteText
-                                    )
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Save",
-                                color = Color(0xFF111111), // Text color for "Save"
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
+                        Text( text = "Save",
+                            color = Color(0xFF111111), // Text color for "Save"
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal)
+                    }
+
+                    //delete
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 6.dp)
+                            .padding(end = 8.dp)
+                            .aspectRatio(1f)
+                            .clip(
+                                CircleShape
                             )
-                        }
+                            .background(Color(0xff323430))
+                            .clickable { },
+                        contentAlignment = Alignment.Center
+                    )
+                    {
+                        Icon(imageVector = Delete, contentDescription = "", tint = statusBarColor)
+                    }
 
-                        // Delete Button
-                        Box(
-                            modifier = Modifier
-                                .padding(6.dp)
-                                .fillMaxHeight()
-                                .aspectRatio(1f)
-                                .clip(CircleShape)
-                                .background(Color(0xff323430)) // White background for "Delete"
-                                .clickable {
-                                    noteName = ""
-                                    noteText = ""
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(imageVector = Delete, contentDescription = "", tint = statusBarColor)
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .padding(6.dp)
-                                .fillMaxHeight()
-                                .aspectRatio(1f)
-                                .clip(CircleShape)
-                                .background(Color(0xff323430)) // White background for "Delete"
-                                .clickable {
-                                    noteName = ""
-                                    noteText = ""
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(imageVector = Icons.Outlined.Edit, contentDescription = "", tint = statusBarColor)
-                        }
+                    //edit
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 6.dp)
+                            .padding(end = 6.dp)
+                            .aspectRatio(1f)
+                            .clip(
+                                CircleShape
+                            )
+                            .background(Color(0xff323430))
+                            .clickable { },
+                        contentAlignment = Alignment.Center
+                    )
+                    {
+                        Icon(imageVector = Icons.Outlined.Edit, contentDescription = "", tint = statusBarColor)
                     }
                 }
-            )
-        }
+            }
+
+
+
+        },
+
 
 
 
@@ -262,5 +281,5 @@ fun EditNoteScreen(viewModel: NotesViewModel){
 @Composable
 @Preview
 fun EditNoteScreenPreview(){
-    EditNoteScreen(viewModel = NotesViewModel())
+    EditNoteScreen(viewModel = NotesViewModel(), navController = rememberNavController())
 }

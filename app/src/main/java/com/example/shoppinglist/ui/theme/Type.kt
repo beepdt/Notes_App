@@ -36,8 +36,8 @@ val Typography = Typography(
 )
 
 val customFont = FontFamily(
-    Font(R.font.cabinetgrotesk_bold, FontWeight.Bold),
-    Font(R.font.satoshi,FontWeight.Normal)
+    Font(R.font.nohemi_bold, FontWeight.Bold),
+    Font(R.font.melody,FontWeight.Normal)
 )
 
 val CustomTypography = Typography(
