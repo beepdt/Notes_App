@@ -40,6 +40,10 @@ fun MyApp(){
     NavHost(navController = navController, startDestination = "home"){
         composable("home"){ NotesUI(viewModel = notesViewModel,navController)}
         composable("new note"){ NewNoteScreen(viewModel = notesViewModel, navController)}
+        composable("editNote/{noteId}"){
+            backStackEntry -> val noteId = backStackEntry.arguments?.getString("noteId")
+            EditNoteScreen(viewModel = notesViewModel, navController = navController,noteId)
+        }
     }
 
 }

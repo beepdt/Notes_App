@@ -1,5 +1,6 @@
 package com.example.shoppinglist
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -141,14 +142,8 @@ LaunchedEffect(Unit){
                             id = item.id,
                             title = item.noteName,
                             text = item.noteText,
-                            onEditing = {
-                                id,name,quantity ->
-                                editNoteId = id
-                                noteName = name
-                                noteText = quantity
-                                showEdit = true
-                            },
-                            onDelete = {viewModel.deleteNote(item.id)}
+                            onDelete = {viewModel.deleteNote(item.id)},
+                            navController = navController
                         )
                     }
                 }
@@ -281,8 +276,8 @@ fun NotesItemUI(
     id: Int,
     title: String,
     text: String,
-    onEditing: (Int,String,String) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    navController: NavHostController
 ) {
 
     var boxExpanded by remember{ mutableStateOf(false) }
@@ -295,8 +290,15 @@ fun NotesItemUI(
         .background(Color(0xFFC7EBB3))
         //.border(width = 0.5.dp, color = Color.LightGray)
         .fillMaxWidth()
+        .animateContentSize()
         .wrapContentHeight()
-        .clickable { boxExpanded = !boxExpanded }
+        .clickable {
+            if (id != -1) {
+                navController.navigate("editNote/${id}")
+            }//boxExpanded = !boxExpanded
+
+
+        }
     ){
 
         var expanded by remember{ mutableStateOf(false) }
@@ -314,6 +316,8 @@ fun NotesItemUI(
             )
 
             {
+
+                
                 Text(text =if (title=="")"Untitled" else title,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
@@ -353,30 +357,6 @@ fun NotesItemUI(
                         modifier = Modifier.background(Color(0xFFFFFFE3))
                         )
                     {
-                        //editing
-                        DropdownMenuItem(
-                            text = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    //modifier = Modifier.background(Color(0xFFFFFFE3))
-                                ) {
-
-                                    Text(text = "Edit",color = Color.Black)
-
-                                    Spacer(modifier = Modifier.weight(1f))
-
-                                    Icon(
-                                        imageVector = Icons.Outlined.Edit,
-                                        contentDescription = "edit",
-                                        tint = Color.Black
-                                    )
-
-                                }
-                                     },
-                            onClick = {
-                                onEditing(id,title,text)
-                                expanded = false
-                            })
 
                         DropdownMenuItem(
                             text = {

@@ -1,5 +1,7 @@
 package com.example.shoppinglist
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +50,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -134,6 +137,7 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
     var noteText by remember { mutableStateOf("") }
     val scrollBehaviour = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit){
     systemUIController.setStatusBarColor(
@@ -156,7 +160,7 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                         .clip(CircleShape)
                         .background(Color(0xff111111))
                     ) {
-                        IconButton(onClick = { navController.navigate("home")}) {
+                        IconButton(onClick = { navController.popBackStack()}) {
                             Icon(
                                 imageVector = Icons.Rounded.ArrowBack,
                                 contentDescription = "back",
@@ -211,7 +215,7 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                     value = noteName,
                     onValueChange = {noteName = it},
                     //singleLine = true,
-                    textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold),
+                    textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, fontFamily = customFont),
                     placeholder = { Text(text = "Title", fontWeight = FontWeight.Normal)},
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color(0xff111111),
@@ -280,13 +284,15 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                             .clip(RoundedCornerShape(40.dp))
                             .background(Color(0xFFC7EBB3))
                             .clickable {
-                                viewModel.addNewNote(
-                                    noteName = noteName,
-                                    noteText = noteText
-                                )
-                                noteName = ""
-                                noteText = ""
-                                navController.navigate("home")
+                                if (noteText != "") {
+                                    viewModel.addNewNote(
+                                        noteName = noteName,
+                                        noteText = noteText
+                                    )
+                                    noteName = ""
+                                    noteText = ""
+                                    navController.popBackStack()
+                                } else Toast.makeText(context,"Empty Note",Toast.LENGTH_SHORT).show()
                             },
                         contentAlignment = Alignment.Center
                     ) {

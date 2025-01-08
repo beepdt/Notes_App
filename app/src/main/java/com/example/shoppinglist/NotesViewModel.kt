@@ -27,7 +27,9 @@ class NotesViewModel: ViewModel(){
         val index = _notesData.indexOfFirst { it.id == id }
         if (index != -1) {
             _notesData.removeAt(index)
+            _notesData.filter { it.id != id }
         }
+
     }
 
 
