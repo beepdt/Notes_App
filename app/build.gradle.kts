@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -53,7 +54,9 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7") //viewmodel
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1") //system ui
-    implementation ("androidx.room:room-runtime:2.5.2")
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.navigation:navigation-compose:2.7.2")
 
 

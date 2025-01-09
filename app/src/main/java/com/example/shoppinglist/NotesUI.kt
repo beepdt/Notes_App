@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,23 +20,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -53,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
@@ -69,21 +57,29 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
 
+    var isDark by remember{ mutableStateOf(false) }
+
+    val bgColor = if(!isDark){
+        Color(0xffFCF6F1)
+    } else Color(0xff141414)
+
+    val txtColor = if(!isDark){
+        Color(0xff111111)
+    } else  Color(0xffFCF6F1)
+
+    val tileColor = if(!isDark){
+        Color(0xFFC7EBB3)
+    } else  Color(0xff1E1E1E)
+
     val systemUIController = rememberSystemUiController()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    var showEdit by remember{ mutableStateOf(false) }
-    var showDialog by remember{ mutableStateOf(false) } //for the alert dialog box
+    val notes = viewModel.notesData //observe state of shoppingData data class
 
-    var editNoteId by remember{ mutableStateOf(-1) }
-   val notes = viewModel.notesData //observe state of shoppingData data class
-    var noteName by remember { mutableStateOf("") }
-    var noteText by remember { mutableStateOf("") }
-
-LaunchedEffect(Unit){
+    LaunchedEffect(Unit){
     systemUIController.setStatusBarColor(
-        color = Color(0xffFCF6F1),
+        color = bgColor,
         darkIcons = true
     )}
 
@@ -96,8 +92,10 @@ LaunchedEffect(Unit){
 
           TopAppBar(
               colors = topAppBarColors(
-                  containerColor =Color(0xffFCF6F1),
+                  containerColor = bgColor,
               ),
+
+              //navigationIcon = { IconButton(onClick = {isDark = !isDark}) { Icon(imageVector = Icons.Rounded.Settings, contentDescription = "", tint = txtColor) } },
 
               title = {
                   Row (
@@ -108,7 +106,7 @@ LaunchedEffect(Unit){
                       horizontalArrangement = Arrangement.End
 
                       ){
-                      Text(text = "notes.", fontWeight = FontWeight.Bold, color = Color(0xff111111))
+                      Text(text = "notes.", fontWeight = FontWeight.Bold, color = txtColor)
                   }
                       },
 
@@ -125,9 +123,13 @@ LaunchedEffect(Unit){
             paddingValues ->
             Column(Modifier
                 .background(
-                    Color(0xffFCF6F1)
+                   bgColor
             ),) {
-                LazyColumn(
+                if (notes.isEmpty()){
+                    Box(modifier = Modifier.fillMaxSize().clickable { navController.navigate("new note") }, contentAlignment = Alignment.Center){
+                        Text(text = "Add a new note", color = txtColor, fontSize = 12.sp)
+                    }
+                } else LazyColumn(
                     //verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier
                         .fillMaxSize()
@@ -143,7 +145,8 @@ LaunchedEffect(Unit){
                             title = item.noteName,
                             text = item.noteText,
                             onDelete = {viewModel.deleteNote(item.id)},
-                            navController = navController
+                            navController = navController,
+                            isDark = isDark
                         )
                     }
                 }
@@ -181,89 +184,7 @@ LaunchedEffect(Unit){
 
     )
     
-    //editing item
-    if (showEdit){
-        AlertDialog(
-            onDismissRequest = {
-                showEdit = false
-                noteName = ""
-                noteText = ""
-                               },
-            confirmButton = { 
-                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
-                    Button(
-                        onClick = { viewModel.editNote(
-                            id = editNoteId,
-                            noteName = noteName,
-                            noteText = noteText
-                    )
-                            showEdit = false
-                            noteName = ""
-                            noteText = ""
 
-                        },
-
-                        modifier = Modifier.fillMaxWidth(),
-
-                        colors = ButtonDefaults.buttonColors(Color.Black)
-
-                    ) {
-                        Text(text = "Confirm Edit",color = Color(0xFFFFFFE3))
-                    }
-                    OutlinedButton(
-                        onClick = {
-                            showEdit = false
-                            noteName = ""
-                            noteText = ""
-                                  },
-
-                        modifier = Modifier.fillMaxWidth()
-                        ) {
-                        Text(text = "Cancel",color = Color.Black)
-                    }
-                }
-            },
-            title = { Text(text = "Edit Note",color = Color.Black)},
-            
-            text = {
-               Column {
-                   OutlinedTextField(
-                       value = noteName,
-                       onValueChange = { noteName = it },
-                       label = { Text(text = "note title",color = Color.DarkGray) },
-                       colors = OutlinedTextFieldDefaults.colors(
-                           focusedBorderColor = Color.Black,
-                           focusedLabelColor = Color.Black,
-                           focusedTextColor = Color.Black,
-                           unfocusedTextColor = Color.DarkGray,
-                           cursorColor = Color.Black
-                       )
-                   )
-                   OutlinedTextField(
-                       value = noteText,
-                       onValueChange = { noteText = it },
-                       label = { Text(text = "text",color = Color.DarkGray) },
-                       colors = OutlinedTextFieldDefaults.colors(
-                           focusedBorderColor = Color.Black,
-                           focusedLabelColor = Color.Black,
-                           focusedTextColor = Color.Black,
-                           unfocusedTextColor = Color.DarkGray,
-                           cursorColor = Color.Black
-                       )
-                   )
-               }
-            },
-
-            containerColor = Color(0xFFFFFFE3),
-            tonalElevation = 8.dp,
-            modifier = Modifier.shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(24.dp),
-                clip = false
-            )
-
-        )
-    }
 }
 
 
@@ -277,8 +198,12 @@ fun NotesItemUI(
     title: String,
     text: String,
     onDelete: () -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    isDark: Boolean
 ) {
+    val tileColor = if(!isDark){
+        Color(0xFFC7EBB3)
+    } else  Color(0xff1E1E1E)
 
     var boxExpanded by remember{ mutableStateOf(false) }
     //val boxHeight by animateDpAsState(targetValue = if (boxExpanded) Dp.Unspecified else Dp.Unspecified,
@@ -287,7 +212,7 @@ fun NotesItemUI(
     Box(modifier = Modifier
         .padding(vertical = 8.dp)
         .clip(RoundedCornerShape(8.dp))
-        .background(Color(0xFFC7EBB3))
+        .background(tileColor)
         //.border(width = 0.5.dp, color = Color.LightGray)
         .fillMaxWidth()
         .animateContentSize()

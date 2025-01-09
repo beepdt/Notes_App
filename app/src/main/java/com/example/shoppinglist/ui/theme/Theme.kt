@@ -37,6 +37,18 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+private val LightColorPalette = lightColorScheme(
+    primary = LightPrimary,
+    onPrimary = LightOnPrimary,
+    background = LightBackground,
+)
+private val DarkColorPalette = darkColorScheme(
+    primary = DarkPrimary,
+    onPrimary = DarkOnPrimary,
+    background = DarkBackground,
+)
+
+
 @Composable
 fun ShoppingListTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -50,8 +62,8 @@ fun ShoppingListTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> DarkColorPalette
+        else -> LightColorPalette
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
