@@ -20,8 +20,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,6 +61,8 @@ fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
 
     var isDark by remember{ mutableStateOf(false) }
 
+    var isClicked by remember { mutableStateOf(false) }
+
     val bgColor = if(!isDark){
         Color(0xffFCF6F1)
     } else Color(0xff141414)
@@ -95,7 +99,14 @@ fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
                   containerColor = bgColor,
               ),
 
-              //navigationIcon = { IconButton(onClick = {isDark = !isDark}) { Icon(imageVector = Icons.Rounded.Settings, contentDescription = "", tint = txtColor) } },
+              navigationIcon = {
+                  IconButton(onClick = {isClicked =!isClicked}) {
+                      Icon(
+                          imageVector = if(!isClicked){
+                              Icons.Outlined.Settings
+                          }else {Icons.Rounded.Settings},
+                          contentDescription = "",
+                          tint = txtColor) } },
 
               title = {
                   Row (
@@ -126,7 +137,9 @@ fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
                    bgColor
             ),) {
                 if (notes.isEmpty()){
-                    Box(modifier = Modifier.fillMaxSize().clickable { navController.navigate("new note") }, contentAlignment = Alignment.Center){
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .clickable { navController.navigate("new note") }, contentAlignment = Alignment.Center){
                         Text(text = "Add a new note", color = txtColor, fontSize = 12.sp)
                     }
                 } else LazyColumn(
