@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -137,6 +138,7 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
     val scrollBehaviour = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit){
     systemUIController.setStatusBarColor(
@@ -291,7 +293,9 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                                     noteName = ""
                                     noteText = ""
                                     navController.popBackStack()
-                                } else Toast.makeText(context,"Empty Note",Toast.LENGTH_SHORT).show()
+                                } else Toast
+                                    .makeText(context, "Empty Note", Toast.LENGTH_SHORT)
+                                    .show()
                             },
                         contentAlignment = Alignment.Center
                     ) {

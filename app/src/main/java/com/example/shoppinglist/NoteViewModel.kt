@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class NoteViewModel(
-    private val noteRepository: NoteRepository
+    private val noteRepository: NoteRepository = Graph.noteRepository
 ): ViewModel() {
 
     lateinit var getAllNotes: Flow<List<NotesData>>
