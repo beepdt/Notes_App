@@ -1,6 +1,7 @@
 package com.example.shoppinglist
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,10 +21,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,10 +32,12 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -100,14 +103,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                   containerColor = bgColor,
               ),
 
-              navigationIcon = {
-                  IconButton(onClick = {isClicked =!isClicked}) {
-                      Icon(
-                          imageVector = if(!isClicked){
-                              Icons.Outlined.Settings
-                          }else {Icons.Rounded.Settings},
-                          contentDescription = "",
-                          tint = txtColor) } },
+
 
               title = {
                   Row (
@@ -149,17 +145,35 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                     contentPadding = paddingValues,
 
                     ) {
-                    items(noteList.value) { note ->
-                        NotesItemUI(
-                            id = note.id,
-                            title = note.noteName,
-                            text = note.noteText,
-                            onDelete = {
-                                //viewModel.deleteNote(note.id)
-                                       },
-                            navController = navController,
-                            isDark = isDark
+                    items(noteList.value,key= {note-> note.id}) { note ->
+                        val dismissState = rememberDismissState(
+                            confirmValueChange = {
+                                if (
+                                    it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart
+                                ){
+                                    viewModel.deleteNote(note)
+                                }
+                                true
+                            }
                         )
+                        SwipeToDismiss(
+                            state = dismissState,
+                            directions = setOf(DismissDirection.EndToStart,DismissDirection.StartToEnd),
+                            background = {},
+                            dismissContent = {
+
+                                NotesItemUI(
+                                    id = note.id,
+                                    title = note.noteName,
+                                    text = note.noteText,
+                                    onDelete = {
+                                        viewModel.deleteNote(note)
+                                    },
+                                    navController = navController,
+                                    isDark = isDark
+                                )
+
+                            })
                     }
                 }
             }
@@ -204,6 +218,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
 
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NotesItemUI(
     id: Int,
@@ -218,6 +233,7 @@ fun NotesItemUI(
     } else  Color(0xff1E1E1E)
 
     val boxExpanded by remember{ mutableStateOf(false) }
+    var visible by remember{ mutableStateOf(false) }
     //val boxHeight by animateDpAsState(targetValue = if (boxExpanded) Dp.Unspecified else Dp.Unspecified,
        // label = "Box Height Animation" )//dynamic box height
 
@@ -232,10 +248,11 @@ fun NotesItemUI(
         .clickable {
             if (id != -1) {
                 navController.navigate("editNote/${id}")
-            }//boxExpanded = !boxExpanded
+            } //boxExpanded = !boxExpanded
 
 
         }
+
     ){
 
         var expanded by remember{ mutableStateOf(false) }
@@ -243,6 +260,7 @@ fun NotesItemUI(
         Row(
             Modifier.fillMaxWidth()
         ){
+
 
             Column(
                 Modifier

@@ -28,6 +28,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -39,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +56,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.shoppinglist.ui.theme.customFont
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,15 +66,20 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
     val statusBarColor = Color(0xffFCF6F1)
 
     var ifEdit by remember{ mutableStateOf(true) }
+    val snackMes = remember{ mutableStateOf("") }
+    val snackbarHostState = remember{ SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     val editNoteId = noteId?.toInt()
-    
+    if (editNoteId == null){
+        navController.popBackStack()
+        return
+    }
 
-    if (editNoteId != null) {
-        val notes = viewModel.getNoteById(editNoteId).collectAsState(initial = NotesData(0, "", ""))
-        viewModel.noteName = notes.value.noteName
-        viewModel.noteText = notes.value.noteText
-    }else{navController.popBackStack()}
+
+    val notes = viewModel.getNoteById(editNoteId).collectAsState(initial = NotesData(0, "", ""))
+    viewModel.noteName = notes.value.noteName
+    viewModel.noteText = notes.value.noteText
     //var noteName by remember{ mutableStateOf("")}
     //var noteText by remember { mutableStateOf("") }
     
@@ -87,6 +96,7 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
         )}
 
     Scaffold (
+        snackbarHost = { SnackbarHost(snackbarHostState) },
 
         topBar = {
             TopAppBar(
@@ -207,8 +217,9 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
 
             Row(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .padding(horizontal = 72.dp)
+                    .fillMaxWidth()
+                    .wrapContentSize(Alignment.BottomCenter)
+                    .padding(start = 48.dp)
                     .height(64.dp)
                     .clip(RoundedCornerShape(48.dp))
                     .background(Color(0xFF111111)),
@@ -227,9 +238,17 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
                             .clip(RoundedCornerShape(40.dp))
                             .background(Color(0xFFC7EBB3))
                             .clickable {
-                               // if (editNoteId != null) { viewModel.editNote(id = editNoteId, noteName = noteName, noteText = noteText) }
-                                    navController.navigate("home")
-                                                        },
+                                viewModel.updateNote(
+                                    NotesData(
+                                        editNoteId,
+                                        noteName = viewModel.noteName,
+                                        noteText = viewModel.noteText
+                                    )
+                                )
+                                snackMes.value = "Update Saved"
+                                scope.launch { snackbarHostState.showSnackbar(snackMes.value) }
+
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text( text = "Save",
@@ -239,7 +258,7 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
                     }
 
                     //delete
-                    Box(
+                   /* Box(
                         modifier = Modifier
                             .padding(vertical = 6.dp)
                             .padding(end = 8.dp)
@@ -249,6 +268,11 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
                             )
                             .background(Color(0xff323430))
                             .clickable {
+
+                                viewModel.deleteNote(NotesData(editNoteId,viewModel.noteName,viewModel.noteText))
+                                navController.popBackStack()
+
+
                                 //if (editNoteId != null) { viewModel.deleteNote(editNoteId)navController.popBackStack() }
 
                             },
@@ -256,7 +280,7 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
                     )
                     {
                         Icon(imageVector = Delete, contentDescription = "", tint = statusBarColor)
-                    }
+                    }*/
 
                     //edit
                     Box(
