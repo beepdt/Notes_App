@@ -35,6 +35,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,34 +51,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.shoppinglist.ui.theme.customFont
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditNoteScreen(viewModel: NotesViewModel,navController:NavHostController,noteId: String?){
+fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,noteId: String?){
 
     val systemUIController = rememberSystemUiController()
     val statusBarColor = Color(0xffFCF6F1)
 
     var ifEdit by remember{ mutableStateOf(true) }
 
-
     val editNoteId = noteId?.toInt()
-    val notes = viewModel.notesData
-    var noteName by remember{ mutableStateOf("")}
-    var noteText by remember { mutableStateOf("") }
     
-    LaunchedEffect(editNoteId){
-        if (editNoteId != null) {
-            val editNote = notes.find { it.id == editNoteId }
-            if (editNote != null){
-            noteName = editNote.noteName
-            noteText = editNote.noteText
-            }
-        }else{
-            navController.popBackStack()
-        }
-    }
+
+    if (editNoteId != null) {
+        val notes = viewModel.getNoteById(editNoteId).collectAsState(initial = NotesData(0, "", ""))
+        viewModel.noteName = notes.value.noteName
+        viewModel.noteText = notes.value.noteText
+    }else{navController.popBackStack()}
+    //var noteName by remember{ mutableStateOf("")}
+    //var noteText by remember { mutableStateOf("") }
+    
+
     
     val scrollBehaviour = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
@@ -156,11 +153,11 @@ fun EditNoteScreen(viewModel: NotesViewModel,navController:NavHostController,not
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .padding(top = 16.dp, start = 8.dp, end = 8.dp),
-                    value = noteName,
-                    onValueChange = {noteName = it},
+                    value = viewModel.noteName,
+                    onValueChange = {viewModel.noteName = it},
                     readOnly = ifEdit,
                    // singleLine = true,
-                    textStyle = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold),
+                    textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, fontFamily = customFont),
                     placeholder = { Text(text = "Title")},
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color(0xff111111),
@@ -182,10 +179,10 @@ fun EditNoteScreen(viewModel: NotesViewModel,navController:NavHostController,not
                         .wrapContentHeight()
                         .padding(horizontal = 8.dp)
                         .padding(top = 8.dp),
-                    value = noteText,
-                    onValueChange = { noteText = it },
+                    value = viewModel.noteText,
+                    onValueChange = { viewModel.noteText = it },
                     readOnly = ifEdit,
-                    textStyle = TextStyle(fontSize = 16.sp),
+                    textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Normal, lineHeight = 24.sp, fontFamily = customFont),
                     placeholder = { Text(text = "Note") },
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color(0xff111111),
@@ -230,18 +227,9 @@ fun EditNoteScreen(viewModel: NotesViewModel,navController:NavHostController,not
                             .clip(RoundedCornerShape(40.dp))
                             .background(Color(0xFFC7EBB3))
                             .clickable {
-                                if (editNoteId != null) {
-                                    viewModel.editNote(
-                                        id = editNoteId,
-                                        noteName = noteName,
-                                        noteText = noteText
-                                    )
-                                }
-
-                                noteName = ""
-                                noteText = ""
-                                navController.navigate("home")
-                            },
+                               // if (editNoteId != null) { viewModel.editNote(id = editNoteId, noteName = noteName, noteText = noteText) }
+                                    navController.navigate("home")
+                                                        },
                         contentAlignment = Alignment.Center
                     ) {
                         Text( text = "Save",
@@ -261,10 +249,7 @@ fun EditNoteScreen(viewModel: NotesViewModel,navController:NavHostController,not
                             )
                             .background(Color(0xff323430))
                             .clickable {
-                                if (editNoteId != null) {
-                                    viewModel.deleteNote(editNoteId)
-                                    navController.popBackStack()
-                                }
+                                //if (editNoteId != null) { viewModel.deleteNote(editNoteId)navController.popBackStack() }
 
                             },
                         contentAlignment = Alignment.Center
@@ -284,7 +269,7 @@ fun EditNoteScreen(viewModel: NotesViewModel,navController:NavHostController,not
                             )
                             .background(Color(0xff323430))
                             .clickable {
-                                       ifEdit = !ifEdit
+                                ifEdit = !ifEdit
                             },
                         contentAlignment = Alignment.Center
                     )
@@ -312,5 +297,5 @@ fun EditNoteScreen(viewModel: NotesViewModel,navController:NavHostController,not
 @Composable
 @Preview
 fun EditNoteScreenPreview(){
-    EditNoteScreen(viewModel = NotesViewModel(), navController = rememberNavController(), noteId = "0")
+    EditNoteScreen(viewModel = NoteViewModel(), navController = rememberNavController(), noteId = "0")
 }

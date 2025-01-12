@@ -38,7 +38,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(){
     val notesViewModel : NotesViewModel = viewModel()
-    NotesUI(viewModel = notesViewModel, navController = rememberNavController())
+    val noteViewModel : NoteViewModel = viewModel()
+    NotesUI(viewModel = noteViewModel, navController = rememberNavController())
     val navController = rememberNavController()
 
     NavHost(
@@ -46,11 +47,11 @@ fun MyApp(){
         startDestination = "home"
 
     ){
-        composable("home", enterTransition = { fadeIn(animationSpec = tween(250)) } ){ NotesUI(viewModel = notesViewModel,navController)}
-        composable("new note",enterTransition = { fadeIn(animationSpec = tween(250)) }){ NewNoteScreen(viewModel = notesViewModel, navController)}
+        composable("home", enterTransition = { fadeIn(animationSpec = tween(250)) } ){ NotesUI(viewModel = noteViewModel,navController)}
+        composable("new note",enterTransition = { fadeIn(animationSpec = tween(250)) }){ NewNoteScreen(viewModel = noteViewModel, navController)}
         composable("editNote/{noteId}"){
             backStackEntry -> val noteId = backStackEntry.arguments?.getString("noteId")
-            EditNoteScreen(viewModel = notesViewModel, navController = navController,noteId)
+            EditNoteScreen(viewModel = noteViewModel, navController = navController,noteId)
         }
     }
 

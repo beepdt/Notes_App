@@ -28,11 +28,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,6 +64,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.shoppinglist.ui.theme.customFont
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 
 val Delete: ImageVector
     get() {
@@ -128,17 +133,24 @@ private var _Delete: ImageVector? = null
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
+fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
 
     val systemUIController = rememberSystemUiController()
     val statusBarColor = Color(0xffFCF6F1)
 
-    var noteName by remember{ mutableStateOf("")}
-    var noteText by remember { mutableStateOf("") }
+   // var noteName by remember{ mutableStateOf("")}
+    //var noteText by remember { mutableStateOf("") }
+
     val scrollBehaviour = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
-    val context = LocalContext.current
+    //val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    //val scaffoldState = rememberBottomSheetScaffoldState()
+    val snackMes = remember{ mutableStateOf("") }
+    val snackbarHostState = remember{SnackbarHostState()}
+
+    viewModel.noteName =""
+    viewModel.noteText = ""
 
     LaunchedEffect(Unit){
     systemUIController.setStatusBarColor(
@@ -147,6 +159,7 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
     )}
 
     Scaffold (
+        snackbarHost = { SnackbarHost(snackbarHostState) },
 
         topBar = {
             TopAppBar(
@@ -213,8 +226,9 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .padding(top = 16.dp, start = 8.dp, end = 8.dp),
-                    value = noteName,
-                    onValueChange = {noteName = it},
+                    value = viewModel.noteName,
+                    onValueChange = {
+                        viewModel.noteName = it},
                     //singleLine = true,
                     textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, fontFamily = customFont),
                     placeholder = { Text(text = "Title", fontWeight = FontWeight.Normal)},
@@ -237,8 +251,8 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .padding(8.dp),
-                    value = noteText,
-                    onValueChange = {noteText = it},
+                    value = viewModel.noteText,
+                    onValueChange = {viewModel.noteText = it},
                     textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Normal, lineHeight = 24.sp, fontFamily = customFont),
                     placeholder = { Text(text = "Note")},
                     colors = TextFieldDefaults.colors(
@@ -285,17 +299,23 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                             .clip(RoundedCornerShape(40.dp))
                             .background(Color(0xFFC7EBB3))
                             .clickable {
-                                if (noteText != "") {
-                                    viewModel.addNewNote(
-                                        noteName = noteName,
-                                        noteText = noteText
+                                if (viewModel.noteText.isNotEmpty()) {
+                                    viewModel.addNote(
+                                        NotesData(
+                                            noteName = viewModel.noteName.trim(),
+                                            noteText = viewModel.noteText.trim()
+                                        )
                                     )
-                                    noteName = ""
-                                    noteText = ""
-                                    navController.popBackStack()
-                                } else Toast
-                                    .makeText(context, "Empty Note", Toast.LENGTH_SHORT)
-                                    .show()
+                                    viewModel.noteName = ""
+                                    viewModel.noteText = ""
+                                    scope.launch {
+
+                                        navController.popBackStack()
+                                    }
+                                } else {
+                                    snackMes.value = "Empty Note"
+                                }
+                                scope.launch { snackbarHostState.showSnackbar(snackMes.value) }
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -316,8 +336,8 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
                             )
                             .background(Color(0xff323430))
                             .clickable {
-                                noteName = ""
-                                noteText = ""
+                                viewModel.noteName = ""
+                                viewModel.noteText = ""
 
                             },
                         contentAlignment = Alignment.Center
@@ -348,7 +368,7 @@ fun NewNoteScreen(viewModel: NotesViewModel,navController: NavHostController){
 @Composable
 @Preview
 fun NewNoteScreenPreview(){
-    NewNoteScreen(viewModel = NotesViewModel(), navController = rememberNavController())
+    NewNoteScreen(viewModel = NoteViewModel(), navController = rememberNavController())
 }
 
 

@@ -1,5 +1,9 @@
 package com.example.shoppinglist
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -9,6 +13,9 @@ import kotlinx.coroutines.launch
 class NoteViewModel(
     private val noteRepository: NoteRepository = Graph.noteRepository
 ): ViewModel() {
+
+    var noteName by mutableStateOf("")
+    var noteText by   mutableStateOf("")
 
     lateinit var getAllNotes: Flow<List<NotesData>>
 

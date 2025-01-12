@@ -37,6 +37,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,9 +58,9 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
+fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
 
-    var isDark by remember{ mutableStateOf(false) }
+    val isDark by remember{ mutableStateOf(false) }
 
     var isClicked by remember { mutableStateOf(false) }
 
@@ -79,7 +80,7 @@ fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    val notes = viewModel.notesData //observe state of shoppingData data class
+   // val notes = viewModel.notesData //observe state of shoppingData data class
 
     LaunchedEffect(Unit){
     systemUIController.setStatusBarColor(
@@ -136,13 +137,9 @@ fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
                 .background(
                    bgColor
             ),) {
-                if (notes.isEmpty()){
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .clickable { navController.navigate("new note") }, contentAlignment = Alignment.Center){
-                        Text(text = "Add a new note", color = txtColor, fontSize = 12.sp)
-                    }
-                } else LazyColumn(
+                val noteList = viewModel.getAllNotes.collectAsState(initial = listOf())
+
+                 LazyColumn(
                     //verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier
                         .fillMaxSize()
@@ -152,12 +149,14 @@ fun NotesUI(viewModel: NotesViewModel,navController: NavHostController){
                     contentPadding = paddingValues,
 
                     ) {
-                    items(notes, key = { it.id }) { item ->
+                    items(noteList.value) { note ->
                         NotesItemUI(
-                            id = item.id,
-                            title = item.noteName,
-                            text = item.noteText,
-                            onDelete = {viewModel.deleteNote(item.id)},
+                            id = note.id,
+                            title = note.noteName,
+                            text = note.noteText,
+                            onDelete = {
+                                //viewModel.deleteNote(note.id)
+                                       },
                             navController = navController,
                             isDark = isDark
                         )
@@ -218,7 +217,7 @@ fun NotesItemUI(
         Color(0xFFC7EBB3)
     } else  Color(0xff1E1E1E)
 
-    var boxExpanded by remember{ mutableStateOf(false) }
+    val boxExpanded by remember{ mutableStateOf(false) }
     //val boxHeight by animateDpAsState(targetValue = if (boxExpanded) Dp.Unspecified else Dp.Unspecified,
        // label = "Box Height Animation" )//dynamic box height
 
@@ -332,7 +331,7 @@ fun NotesItemUI(
 @Composable
 @Preview
 fun NotesUIPreview(){
-    NotesUI(viewModel = NotesViewModel(), navController = rememberNavController())
+    NotesUI(viewModel = NoteViewModel(), navController = rememberNavController())
 }
 
 
