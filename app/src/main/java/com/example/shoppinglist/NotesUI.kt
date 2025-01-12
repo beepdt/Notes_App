@@ -65,7 +65,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
 
     val isDark by remember{ mutableStateOf(false) }
 
-    var isClicked by remember { mutableStateOf(false) }
+    //var isClicked by remember { mutableStateOf(false) }
 
     val bgColor = if(!isDark){
         Color(0xffFCF6F1)
@@ -75,9 +75,9 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
         Color(0xff111111)
     } else  Color(0xffFCF6F1)
 
-    val tileColor = if(!isDark){
+    /*val tileColor = if(!isDark){
         Color(0xFFC7EBB3)
-    } else  Color(0xff1E1E1E)
+    } else  Color(0xff1E1E1E)*/
 
     val systemUIController = rememberSystemUiController()
 
@@ -146,6 +146,9 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
 
                     ) {
                     items(noteList.value,key= {note-> note.id}) { note ->
+
+
+
                         val dismissState = rememberDismissState(
                             confirmValueChange = {
                                 if (
@@ -158,8 +161,20 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                         )
                         SwipeToDismiss(
                             state = dismissState,
-                            directions = setOf(DismissDirection.EndToStart,DismissDirection.StartToEnd),
-                            background = {},
+                            directions = setOf(DismissDirection.StartToEnd),
+                            background = {
+
+                                val color = Color(0xff1E1E1E)
+                                
+                                Box(modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .fillMaxSize()
+                                    .background(color),
+                                    contentAlignment = Alignment.CenterStart){
+                                    if (dismissState.dismissDirection == DismissDirection.StartToEnd){Icon(imageVector = Delete, contentDescription ="",modifier = Modifier.padding(start = 16.dp),tint = bgColor ) }
+                                }
+                            },
                             dismissContent = {
 
                                 NotesItemUI(
@@ -170,7 +185,8 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                                         viewModel.deleteNote(note)
                                     },
                                     navController = navController,
-                                    isDark = isDark
+                                    isDark = isDark,
+
                                 )
 
                             })
@@ -221,6 +237,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NotesItemUI(
+
     id: Int,
     title: String,
     text: String,
@@ -233,7 +250,7 @@ fun NotesItemUI(
     } else  Color(0xff1E1E1E)
 
     val boxExpanded by remember{ mutableStateOf(false) }
-    var visible by remember{ mutableStateOf(false) }
+    //var visible by remember{ mutableStateOf(false) }
     //val boxHeight by animateDpAsState(targetValue = if (boxExpanded) Dp.Unspecified else Dp.Unspecified,
        // label = "Box Height Animation" )//dynamic box height
 
