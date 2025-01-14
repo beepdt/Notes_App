@@ -17,12 +17,19 @@ class NoteViewModel(
     var noteName by mutableStateOf("")
     var noteText by   mutableStateOf("")
     var isPinned by mutableStateOf(false)
+    var categoryName by mutableStateOf("")
+
+    var selectedCategoryId by mutableStateOf<Int?>(null)
 
     lateinit var getAllNotes: Flow<List<NotesData>>
+    lateinit var getAllCategories: Flow<List<Category>>
+    lateinit var getAllnotesWithCategory: Flow<List<NoteWithCategory>>
 
     init {
         viewModelScope.launch {
             getAllNotes = noteRepository.getAllNotes()
+            getAllCategories = noteRepository.getAllCategories()
+            getAllnotesWithCategory = noteRepository.getAllNotesWithCategories()
         }
     }
 
@@ -46,6 +53,34 @@ class NoteViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.deleteANote(note = note)
         }
+    }
+
+    fun addCategory(category: Category){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.addCategory(category)
+        }
+    }
+
+    fun deleteCategory(category: Category) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.deleteCategory(category)
+        }
+    }
+
+    fun updateNoteCategory(noteId: Int, categoryId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.updateCategory(noteId, categoryId)
+        }
+    }
+
+    fun assignDefaultCategory(categoryId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.assignDefaultCategory(categoryId)
+        }
+    }
+
+    fun getNotesByCategory(categoryId: Int): Flow<List<NotesData>> {
+        return noteRepository.getNotesByCategory(categoryId)
     }
 
 }
