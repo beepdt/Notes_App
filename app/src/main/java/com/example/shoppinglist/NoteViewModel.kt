@@ -16,6 +16,7 @@ class NoteViewModel(
 
     var noteName by mutableStateOf("")
     var noteText by   mutableStateOf("")
+    var isPinned by mutableStateOf(false)
 
     lateinit var getAllNotes: Flow<List<NotesData>>
 

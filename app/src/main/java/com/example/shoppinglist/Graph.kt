@@ -12,6 +12,6 @@ object Graph {
     }
 
     fun provide(context: Context){
-        database = Room.databaseBuilder(context,NoteDatabase::class.java,"noteList.db").build()
+        database = Room.databaseBuilder(context,NoteDatabase::class.java,"noteList.db").addMigrations(NoteDatabase.MIGRATION_1_2).build()
     }
 }

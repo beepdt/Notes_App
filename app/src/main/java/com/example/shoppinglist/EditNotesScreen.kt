@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -105,6 +106,7 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
                     containerColor = statusBarColor,
                 ),
 
+
                 navigationIcon = {
                     Box(modifier = Modifier
                         .padding(8.dp)
@@ -128,7 +130,7 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
                         Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
-                        horizontalArrangement = Arrangement.Absolute.Right) {
+                        horizontalArrangement = Arrangement.End) {
 
                         Text(
                             text = "edit",

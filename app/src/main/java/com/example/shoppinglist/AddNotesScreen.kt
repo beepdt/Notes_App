@@ -1,6 +1,5 @@
 package com.example.shoppinglist
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,20 +29,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +49,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -128,7 +122,95 @@ val Delete: ImageVector
         }.build()
         return _Delete!!
     }
+val Bookmark: ImageVector
+    get() {
+        if (_Bookmark != null) {
+            return _Bookmark!!
+        }
+        _Bookmark = ImageVector.Builder(
+            name = "Bookmark",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 960f,
+            viewportHeight = 960f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Black),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(200f, 840f)
+                verticalLineToRelative(-640f)
+                quadToRelative(0f, -33f, 23.5f, -56.5f)
+                reflectiveQuadTo(280f, 120f)
+                horizontalLineToRelative(400f)
+                quadToRelative(33f, 0f, 56.5f, 23.5f)
+                reflectiveQuadTo(760f, 200f)
+                verticalLineToRelative(640f)
+                lineTo(480f, 720f)
+                close()
+                moveToRelative(80f, -122f)
+                lineToRelative(200f, -86f)
+                lineToRelative(200f, 86f)
+                verticalLineToRelative(-518f)
+                horizontalLineTo(280f)
+                close()
+                moveToRelative(0f, -518f)
+                horizontalLineToRelative(400f)
+                close()
+            }
+        }.build()
+        return _Bookmark!!
+    }
+val BookmarkFilled: ImageVector
+    get() {
+        if (_BookmarkFilled != null) {
+            return _BookmarkFilled!!
+        }
+        _BookmarkFilled = ImageVector.Builder(
+            name = "BookmarkFilled",
+            defaultWidth = 15.dp,
+            defaultHeight = 15.dp,
+            viewportWidth = 15f,
+            viewportHeight = 15f
+        ).apply {
+            path(
+                fill = SolidColor(Color(0xFF000000)),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.EvenOdd
+            ) {
+                moveTo(3.5f, 2f)
+                curveTo(3.2239f, 2f, 3f, 2.2239f, 3f, 2.5f)
+                verticalLineTo(13.5f)
+                curveTo(3f, 13.6818f, 3.0986f, 13.8492f, 3.2576f, 13.9373f)
+                curveTo(3.4166f, 14.0254f, 3.6109f, 14.0203f, 3.765f, 13.924f)
+                lineTo(7.5f, 11.5896f)
+                lineTo(11.235f, 13.924f)
+                curveTo(11.3891f, 14.0203f, 11.5834f, 14.0254f, 11.7424f, 13.9373f)
+                curveTo(11.9014f, 13.8492f, 12f, 13.6818f, 12f, 13.5f)
+                verticalLineTo(2.5f)
+                curveTo(12f, 2.2239f, 11.7761f, 2f, 11.5f, 2f)
+                horizontalLineTo(3.5f)
+                close()
+            }
+        }.build()
+        return _BookmarkFilled!!
+    }
 
+private var _BookmarkFilled: ImageVector? = null
+private var _Bookmark: ImageVector? = null
 private var _Delete: ImageVector? = null
 
 @OptIn(ExperimentalMaterial3Api::class)

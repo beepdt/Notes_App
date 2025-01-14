@@ -13,6 +13,8 @@ data class NotesData(
     var noteName: String = "",
     @ColumnInfo(name = "note-desc")
     var noteText: String = "",
+    @ColumnInfo(name = "is-pinned", defaultValue = "false")
+    var isPinned: Boolean = false
 
 )
 
