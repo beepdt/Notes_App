@@ -3,6 +3,7 @@ package com.example.shoppinglist
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.DismissDirection
@@ -35,6 +37,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
@@ -54,6 +57,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
@@ -121,20 +125,20 @@ private var _Sort: ImageVector? = null
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
+fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
 
-    val isDark by remember{ mutableStateOf(false) }
+    val isDark by remember { mutableStateOf(false) }
     viewModel.isPinned = false
 
     //var isClicked by remember { mutableStateOf(false) }
 
-    val bgColor = if(!isDark){
+    val bgColor = if (!isDark) {
         Color(0xffFCF6F1)
     } else Color(0xff141414)
 
-    val txtColor = if(!isDark){
+    val txtColor = if (!isDark) {
         Color(0xff111111)
-    } else  Color(0xffFCF6F1)
+    } else Color(0xffFCF6F1)
 
     /*val tileColor = if(!isDark){
         Color(0xFFC7EBB3)
@@ -145,10 +149,22 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
 
-    var sort by remember{ mutableStateOf(false) }
-    var noteList = viewModel.getAllnotesDesc.collectAsState(initial = listOf())
-    val noteListAsc = viewModel.getAllnotesAsc.collectAsState(initial = listOf())
-    val noteListDesc = viewModel.getAllnotesDesc.collectAsState(initial = listOf())
+    var sortOrder by remember { mutableStateOf(SortOrder.DESCENDING) }
+    var sort by remember { mutableStateOf(false) }
+    val noteList = when (sortOrder) {
+        SortOrder.DESCENDING->viewModel.getAllnotesDesc.collectAsState(initial = listOf())
+        SortOrder.ASCENDING->viewModel.getAllnotesAsc.collectAsState(initial = listOf())
+    }
+    
+    var radioButtonDesc by remember{ mutableStateOf(true) }
+    var radioButtonAsc by remember{ mutableStateOf(true) }
+    if (sortOrder == SortOrder.DESCENDING){
+        radioButtonDesc = true
+    }
+    if (sortOrder == SortOrder.ASCENDING){
+        radioButtonAsc = true
+    }
+
 
 
    // val notes = viewModel.notesData //observe state of shoppingData data class
@@ -176,7 +192,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                       .padding(8.dp)
                       .clip(CircleShape)
                       .background(Color(0xff111111))) {
-                      IconButton(onClick = { navController.popBackStack() }) {
+                      IconButton(onClick = {  }) {
                           Icon(
                               imageVector = Icons.Rounded.ArrowBack,
                               contentDescription = "back",
@@ -208,24 +224,36 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                   Box(modifier = Modifier
                       .padding(8.dp)
                       .size(48.dp)
+                      //.border(width = 0.5.dp, color =Color(0xff111111))
                       .clip(CircleShape)
+                      //.border(width = 0.5.dp, color =Color(0xff111111))
                       .background(Color(0xff111111))
                       .clickable {
                           sort = !sort
                       },
                       contentAlignment = Alignment.Center
                   ){
-                      Icon(imageVector = Sort, contentDescription = "", tint = Color.White)
+                      Icon(imageVector = Sort, contentDescription = "", tint = bgColor)
                   }
 
-                      DropdownMenu(expanded = sort, onDismissRequest = { sort = false }) {
+                      DropdownMenu(expanded = sort, onDismissRequest = { sort = false },Modifier.background(bgColor)) {
                           DropdownMenuItem(
                               text = { Text(text = "Descending", fontSize = 12.sp, fontWeight = FontWeight.Normal, fontFamily = customFont) },
-                              onClick = { noteList = noteListDesc }
+                              trailingIcon = { Icon(imageVector = Icons.Rounded.ArrowBack, modifier = Modifier.rotate(
+                                  270F).size(16.dp),contentDescription ="", tint = Color(0xff111111) )},
+                              onClick = {
+                                  sortOrder = SortOrder.DESCENDING
+                                  sort = false
+                              }
                           )
                           DropdownMenuItem(
                               text = { Text(text = "Ascending", fontSize = 12.sp, fontWeight = FontWeight.Normal, fontFamily = customFont)},
-                              onClick = { noteList = noteListAsc }
+                              trailingIcon = { Icon(imageVector = Icons.Rounded.ArrowBack, modifier = Modifier.rotate(
+                                  90F).size(16.dp),contentDescription ="", tint =  Color(0xff111111))},
+                              onClick = {
+                                  sortOrder = SortOrder.ASCENDING
+                                  sort = false
+                              }
                           )
                       }
 
@@ -421,106 +449,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                             )
                         }
                     }
-
-
                 }
-
-
-                //all
-                /*Box(modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                ) {
-                    Text(
-                        text = "All Notes",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = txtColor,
-                    )
-                }*/
-
-                 /*LazyColumn(
-                    //verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        // .fillMaxSize()
-                        .padding(horizontal = 8.dp, vertical = 8.dp)
-                        //.nestedScroll(scrollBehavior.nestedScrollConnection),
-
-                    //contentPadding = paddingValues,
-
-                    ) {
-                    items(noteList.value,key= {note-> note.id}) { note ->
-
-
-
-
-                        val dismissState = rememberDismissState(
-                            positionalThreshold = { totalDistance -> totalDistance * 0.4f },
-                            confirmValueChange = { dismissValue ->
-                                when(dismissValue){
-                                    DismissValue.DismissedToEnd->{
-                                        scope.launch {
-                                            try{
-                                                viewModel.deleteNote(note)
-                                                true
-                                            }catch (e: Exception){
-                                                false
-                                            }
-                                        }
-                                        true
-                                    }
-                                    DismissValue.DismissedToStart -> false
-                                    DismissValue.Default -> false
-                                }
-
-                            }
-                        )
-                        SwipeToDismiss(
-                            state = dismissState,
-                            directions = setOf(DismissDirection.StartToEnd),
-                            background = {
-
-                                val color = Color(0xff1E1E1E)
-                                
-                                Box(modifier = Modifier
-                                    .padding(vertical = 8.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .fillMaxSize()
-                                    .background(color),
-                                    contentAlignment = Alignment.CenterStart){
-                                    if (dismissState.dismissDirection == DismissDirection.StartToEnd){Icon(imageVector = Delete, contentDescription ="",modifier = Modifier.padding(start = 16.dp),tint = bgColor ) }
-                                }
-                            },
-                            dismissContent = {
-
-                                NotesItemUI(
-
-                                    id = note.id,
-                                    title = note.noteName,
-                                    text = note.noteText,
-                                    onDelete = {
-                                        viewModel.deleteNote(note)
-                                    },
-                                    navController = navController,
-                                    isDark = isDark,
-                                    isPinned = note.isPinned,
-                                    onEdit = {
-                                        viewModel.isPinned = !viewModel.isPinned
-                                        viewModel.updateNote(
-                                            NotesData(
-                                                id = note.id,
-                                                noteName = note.noteName,
-                                                noteText = note.noteText,
-                                                isPinned = viewModel.isPinned
-                                            )
-                                        )
-                                    }
-
-
-                                )
-
-                            })
-                    }
-                }*/
             }
         },
 
@@ -545,17 +474,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                     Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color(0xffFCF6F1), modifier = Modifier.size(24.dp))
             }
         },
-
-
-
-
-
-
-
-
     )
-    
-
 }
 
 
@@ -679,54 +598,17 @@ fun NotesItemUI(
                         }
                     }
                 }
-                //used a box because menu rendered on top of icon button
-                /*Box {
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(
-                            imageVector = Icons.Rounded.MoreVert,
-                            contentDescription = "edit and delete options",
-                            tint = Color.Black
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier.background(Color(0xFFFFFFE3))
-                        )
-                    {
-
-                        DropdownMenuItem(
-                            text = {
-
-                                Row (
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    //modifier = Modifier.background(Color(0xFFFFFFE3))
-                                    ){
-
-                                    Text(text = "Delete", color = Color.Black)
-
-                                    Spacer(modifier = Modifier.weight(1f))
-
-                                    Icon(
-                                        imageVector = Icons.Outlined.Delete,
-                                        contentDescription = "delete",
-                                        tint = Color.Black
-                                    )
-
-                                }
-                            },
-                            onClick = {
-                                onDelete()
-                                expanded = false })
-                    }
-                }8*/
             }
 
         }
 
     }
 
+}
+
+enum class SortOrder{
+    ASCENDING,
+    DESCENDING
 }
 
 @Composable
