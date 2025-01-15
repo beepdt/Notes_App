@@ -4,6 +4,12 @@ import kotlinx.coroutines.flow.Flow
 
 class NoteRepository (private val noteDao: NoteDao){
 
+    fun getAllNotesDesc(): Flow<List<NotesData>> = noteDao.getAllNotesDesc()
+
+    fun getAllNotesAsc(): Flow<List<NotesData>> = noteDao.getAllNotesAsc()
+
+    fun getRecentNotes(): Flow<List<NotesData>> = noteDao.getRecentNotes()
+
     suspend fun addANote(note: NotesData){
         noteDao.addANote(note)
     }

@@ -385,7 +385,8 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
                                     viewModel.addNote(
                                         NotesData(
                                             noteName = viewModel.noteName.trim(),
-                                            noteText = viewModel.noteText.trim()
+                                            noteText = viewModel.noteText.trim(),
+                                            dateCreated = System.currentTimeMillis()
                                         )
                                     )
                                     viewModel.noteName = ""

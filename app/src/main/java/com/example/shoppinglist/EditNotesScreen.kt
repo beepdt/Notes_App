@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,6 +60,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.shoppinglist.ui.theme.customFont
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,6 +130,8 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
                 },
 
 
+
+
                 title = {
                     Row(
                         Modifier
@@ -157,6 +164,15 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
                 .verticalScroll(scrollState)
 
             ) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                    contentAlignment = Alignment.CenterStart){
+                    val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                    val timeStamp = notes.value.dateCreated
+                    val createdAt = dateFormat.format(Date(timeStamp))
+                    Text(text = "Created on $createdAt", Modifier.padding(top = 16.dp, start = 22.dp),fontWeight = FontWeight.Normal, fontFamily = customFont, fontSize = 14.sp)
+                }
 
 
 

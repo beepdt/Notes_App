@@ -12,6 +12,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 abstract class NoteDao {
 
+    @Query("Select * from `note-table` ORDER BY created DESC LIMIT 3")
+    abstract fun getRecentNotes(): Flow<List<NotesData>>
+
+    //all notes by descening order
+    @Query("Select * from `note-table` ORDER BY created DESC")
+    abstract fun getAllNotesDesc(): Flow<List<NotesData>>
+
+    @Query("Select * from `note-table` ORDER BY created ASC")
+    abstract fun getAllNotesAsc(): Flow<List<NotesData>>
+
     //insert new note
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun addANote(noteEntity: NotesData)

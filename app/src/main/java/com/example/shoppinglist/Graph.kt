@@ -16,6 +16,6 @@ object Graph {
         database = Room.databaseBuilder(
             context.applicationContext,
             NoteDatabase::class.java,
-            "noteList.db").addMigrations(NoteDatabase.MIGRATION_1_2,NoteDatabase.MIGRATION_2_3).build()
+            "noteList.db").build()
     }
 }

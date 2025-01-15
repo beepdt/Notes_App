@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                   Categories(viewModel = NoteViewModel())
+                   MyApp()
                 }
             }
         }

@@ -24,12 +24,18 @@ class NoteViewModel(
     lateinit var getAllNotes: Flow<List<NotesData>>
     lateinit var getAllCategories: Flow<List<Category>>
     lateinit var getAllnotesWithCategory: Flow<List<NoteWithCategory>>
+    lateinit var getAllnotesDesc: Flow<List<NotesData>>
+    lateinit var getAllnotesAsc:Flow<List<NotesData>>
+    lateinit var getRecentNotes: Flow<List<NotesData>>
 
     init {
         viewModelScope.launch {
             getAllNotes = noteRepository.getAllNotes()
             getAllCategories = noteRepository.getAllCategories()
             getAllnotesWithCategory = noteRepository.getAllNotesWithCategories()
+            getAllnotesDesc = noteRepository.getAllNotesDesc()
+            getAllnotesAsc = noteRepository.getAllNotesAsc()
+            getRecentNotes = noteRepository.getRecentNotes()
         }
     }
 

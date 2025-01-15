@@ -38,7 +38,9 @@ data class NotesData(
     @ColumnInfo(name = "is-pinned", defaultValue = "false")
     var isPinned: Boolean = false,
     @ColumnInfo(name = "category-Id")
-    var categoryId: Int? = null
+    var categoryId: Int? = null,
+    @ColumnInfo(name = "created")
+    var dateCreated: Long = System.currentTimeMillis()
 )
 
 data class NoteWithCategory(

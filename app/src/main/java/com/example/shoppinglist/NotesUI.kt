@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,15 +24,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.sharp.FavoriteBorder
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.DropdownMenu
@@ -50,16 +46,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,8 +69,55 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.shoppinglist.ui.theme.customFont
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
+
+public val Sort: ImageVector
+    get() {
+        if (_Sort != null) {
+            return _Sort!!
+        }
+        _Sort = ImageVector.Builder(
+            name = "Sort",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 960f,
+            viewportHeight = 960f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Black),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(120f, 720f)
+                verticalLineToRelative(-80f)
+                horizontalLineToRelative(240f)
+                verticalLineToRelative(80f)
+                close()
+                moveToRelative(0f, -200f)
+                verticalLineToRelative(-80f)
+                horizontalLineToRelative(480f)
+                verticalLineToRelative(80f)
+                close()
+                moveToRelative(0f, -200f)
+                verticalLineToRelative(-80f)
+                horizontalLineToRelative(720f)
+                verticalLineToRelative(80f)
+                close()
+            }
+        }.build()
+        return _Sort!!
+    }
+
+private var _Sort: ImageVector? = null
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,6 +145,12 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
 
+    var sort by remember{ mutableStateOf(false) }
+    var noteList = viewModel.getAllnotesDesc.collectAsState(initial = listOf())
+    val noteListAsc = viewModel.getAllnotesAsc.collectAsState(initial = listOf())
+    val noteListDesc = viewModel.getAllnotesDesc.collectAsState(initial = listOf())
+
+
    // val notes = viewModel.notesData //observe state of shoppingData data class
 
     LaunchedEffect(Unit){
@@ -117,6 +171,22 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                   containerColor = bgColor,
               ),
 
+              navigationIcon = {
+                  Box(modifier = Modifier
+                      .padding(8.dp)
+                      .clip(CircleShape)
+                      .background(Color(0xff111111))) {
+                      IconButton(onClick = { navController.popBackStack() }) {
+                          Icon(
+                              imageVector = Icons.Rounded.ArrowBack,
+                              contentDescription = "back",
+                              tint = Color(0xffFCF6F1)
+                          )
+
+                      }
+                  }
+              },
+
 
 
               title = {
@@ -125,19 +195,46 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                           .fillMaxWidth()
                           .padding(end = 8.dp),
                       verticalAlignment = Alignment.CenterVertically,
-                      horizontalArrangement = Arrangement.End
+                      horizontalArrangement = Arrangement.Center
 
                       ){
-                      Text(text = "notes.", fontWeight = FontWeight.Bold, color = txtColor)
+                      Text(text = "all notes.", fontWeight = FontWeight.Bold, color = txtColor)
                   }
                       },
 
-              scrollBehavior = scrollBehavior
+              scrollBehavior = scrollBehavior,
+              
+              actions = {
+                  Box(modifier = Modifier
+                      .padding(8.dp)
+                      .size(48.dp)
+                      .clip(CircleShape)
+                      .background(Color(0xff111111))
+                      .clickable {
+                          sort = !sort
+                      },
+                      contentAlignment = Alignment.Center
+                  ){
+                      Icon(imageVector = Sort, contentDescription = "", tint = Color.White)
+                  }
 
+                      DropdownMenu(expanded = sort, onDismissRequest = { sort = false }) {
+                          DropdownMenuItem(
+                              text = { Text(text = "Descending", fontSize = 12.sp, fontWeight = FontWeight.Normal, fontFamily = customFont) },
+                              onClick = { noteList = noteListDesc }
+                          )
+                          DropdownMenuItem(
+                              text = { Text(text = "Ascending", fontSize = 12.sp, fontWeight = FontWeight.Normal, fontFamily = customFont)},
+                              onClick = { noteList = noteListAsc }
+                          )
+                      }
 
-
+                  
+              }
+              
               )
       },
+        
 
 
         //main body
@@ -150,7 +247,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
                     .fillMaxSize()
                     //.verticalScroll(rememberScrollState())
                 ) {
-                val noteList = viewModel.getAllNotes.collectAsState(initial = listOf())
+                
                 val scope = rememberCoroutineScope()
 
 
@@ -469,8 +566,6 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController){
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NotesItemUI(
-
-
     id: Int,
     title: String,
     text: String,
@@ -574,7 +669,9 @@ fun NotesItemUI(
                              BookmarkFilled
                              }, contentDescription = "")
                     }*/
-                    Box(modifier = Modifier.clickable { onEdit() }.wrapContentSize(), contentAlignment = Alignment.Center){
+                    Box(modifier = Modifier
+                        .clickable { onEdit() }
+                        .wrapContentSize(), contentAlignment = Alignment.Center){
                         if (!isPinned){
                             Icon(imageVector = Bookmark, contentDescription = "", tint =Color(0xff111111) )
                         }else{
