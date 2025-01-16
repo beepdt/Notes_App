@@ -13,17 +13,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -274,15 +281,16 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
                         Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
-                        horizontalArrangement = Arrangement.Absolute.Right) {
+                        horizontalArrangement = Arrangement.Center) {
                         Text(
                             text = "new note",
                             fontWeight = FontWeight.Bold,
                             color = Color(0xff111111),
-                            fontSize = 16.sp
+                           // fontSize = 16.sp
                         )
                     }
                 },
+
 
 
 
@@ -355,88 +363,61 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
         },
 
         floatingActionButton = {
-
-
-
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentSize(Alignment.BottomCenter)
-                    .padding(start = 48.dp)
+                Modifier
+                    .padding(8.dp)
                     .height(64.dp)
                     .clip(RoundedCornerShape(48.dp))
-                    .background(Color(0xFF111111)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Row {
+                    .background(Color(0xFF111111))
 
-                    //save
-                    Box(
-                        modifier = Modifier
-                            .padding(6.dp)
-                            .fillMaxHeight()
-                            .width(150.dp)
-                            //.weight(0.5f)
-                            .clip(RoundedCornerShape(40.dp))
-                            .background(Color(0xFFC7EBB3))
-                            .clickable {
-                                if (viewModel.noteText.isNotEmpty()) {
-                                    viewModel.addNote(
-                                        NotesData(
-                                            noteName = viewModel.noteName.trim(),
-                                            noteText = viewModel.noteText.trim(),
-                                            dateCreated = System.currentTimeMillis()
-                                        )
-                                    )
-                                    viewModel.noteName = ""
-                                    viewModel.noteText = ""
-                                    scope.launch {
+            ) {
+                ExtendedFloatingActionButton(
+                    containerColor = Color(0xFFC7EBB3),
+                    modifier = Modifier.padding(6.dp).width(120.dp),
+                    shape = RoundedCornerShape(40.dp),
+                    onClick = {
 
-                                        navController.popBackStack()
-                                    }
-                                } else {
-                                    snackMes.value = "Empty Note"
-                                }
-                                scope.launch { snackbarHostState.showSnackbar(snackMes.value) }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text( text = "Save",
-                            color = Color(0xFF111111), // Text color for "Save"
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal)
-                    }
-
-                    //reset
-                    Box(
-                        modifier = Modifier
-                            .padding(vertical = 6.dp)
-                            .padding(end = 8.dp)
-                            .aspectRatio(1f)
-                            .clip(
-                                CircleShape
+                        if (viewModel.noteText.isNotEmpty()) {
+                            viewModel.addNote(
+                                NotesData(
+                                    noteName = viewModel.noteName.trim(),
+                                    noteText = viewModel.noteText.trim(),
+                                    dateCreated = System.currentTimeMillis()
+                                )
                             )
-                            .background(Color(0xff323430))
-                            .clickable {
-                                viewModel.noteName = ""
-                                viewModel.noteText = ""
+                            viewModel.noteName = ""
+                            viewModel.noteText = ""
+                            scope.launch {
 
-                            },
-                        contentAlignment = Alignment.Center
-                    )
-                    {
-                        Icon(imageVector = Icons.Outlined.Refresh, contentDescription = "", tint = statusBarColor)
-                    }
+                                navController.popBackStack()
+                            }
+                        } else {
+                            snackMes.value = "Empty Note"
+                        }
+                        scope.launch { snackbarHostState.showSnackbar(snackMes.value) }
 
-                    //edit
+                    }) {
+                    Text(text = "Save",
+                        color = Color(0xFF111111), // Text color for "Save"
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal)
+                }
+                FloatingActionButton(
+                    containerColor = Color(0xff323430),
+                    modifier = Modifier.padding(end=6.dp, top = 6.dp, bottom = 6.dp),
+                    shape = CircleShape,
+                    onClick = {
+
+                        viewModel.noteName = ""
+                        viewModel.noteText = ""
+
+                    }) {
+                    Icon(imageVector = Icons.Rounded.Refresh, contentDescription = "",tint = Color(0xffFCF6F1))
                 }
             }
-
-
-
-
         },
+
+        floatingActionButtonPosition = FabPosition.Center
 
 
 

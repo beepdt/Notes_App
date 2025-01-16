@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,8 +29,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -37,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +60,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shoppinglist.ui.theme.customFont
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 import java.util.concurrent.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,22 +69,42 @@ import java.util.concurrent.Flow
 fun Categories(viewModel: NoteViewModel){
 
 
+    val colors = listOf(Color(0xFFC7EBB3),Color(0xFFa2e494),Color(0xFFe7efda),Color(0xFFcadbb7))
+    viewModel.categoryName = ""
+    val systemUIController = rememberSystemUiController()
     val categoryList = viewModel.getAllCategories.collectAsState(initial = listOf())
     var isEnabled by remember{ mutableStateOf(false) }
 
     if (isEnabled){
         AlertDialog(
-            onDismissRequest = { isEnabled = false },
-            confirmButton = { /*TODO*/ },
+            onDismissRequest = { isEnabled = false
+                               viewModel.categoryName = ""},
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.addCategory(
+                        Category(categoryName = viewModel.categoryName)
+                    )
+                    viewModel.categoryName = ""
+                }
+                ) {
+                Text(text = "Add Category")
+            } },
             text = {
-                OutlinedTextField(value = "", onValueChange ={})
+                OutlinedTextField(value = viewModel.categoryName, onValueChange ={viewModel.categoryName = it})
             }
             )
     }
 
+    LaunchedEffect(Unit){
+        systemUIController.setStatusBarColor(
+            color = Color(0xffFCF6F1),
+            darkIcons = true
+        )}
+
 
 
     Scaffold (
+
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(Color(0xffFCF6F1)),
@@ -126,6 +158,10 @@ fun Categories(viewModel: NoteViewModel){
             
             )
         },
+
+
+
+
         content = {
             paddingValues ->
 
@@ -143,7 +179,9 @@ fun Categories(viewModel: NoteViewModel){
                     items(categoryList.value){category->
                         CategoryItem(
                             id = category.categoryId,
-                            text = category.categoryName)
+                            text = category.categoryName,
+                            color = colors.random()
+                        )
 
                     }
                 }
@@ -156,20 +194,33 @@ fun Categories(viewModel: NoteViewModel){
 @Composable
 fun CategoryItem(
     id:Int,
-    text: String
+    text: String,
+    color: Color
 ){
-    Box(
+
+    Column(
         modifier = Modifier
-            .padding(vertical = 8.dp)
+            .padding(horizontal = 4.dp, vertical = 4.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFFC7EBB3))
+            .background(color)
             //.border(width = 0.5.dp, color = Color.LightGray)
             .fillMaxWidth()
-            .animateContentSize()
+            //.animateContentSize()
+            //.defaultMinSize(minHeight = 140.dp)
             .wrapContentHeight(),
-        contentAlignment = Alignment.Center
+        verticalArrangement = Arrangement.Bottom
     ) {
-        Text(text = text)
+        IconButton(onClick = { /*TODO*/ },Modifier.align(Alignment.End)) {
+            Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = "")
+        }
+        Spacer(modifier = Modifier.height(100.dp))
+        Text(
+            text = text,
+            fontWeight = FontWeight.Bold,
+            fontSize = 32.sp,
+            lineHeight = 40.sp,
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp)
+        )
     }
     
 }

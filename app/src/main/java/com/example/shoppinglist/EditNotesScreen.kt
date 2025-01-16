@@ -28,6 +28,9 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -234,100 +237,47 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
         floatingActionButton = {
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentSize(Alignment.BottomCenter)
-                    .padding(start = 48.dp)
+                Modifier
+                    .padding(8.dp)
                     .height(64.dp)
                     .clip(RoundedCornerShape(48.dp))
-                    .background(Color(0xFF111111)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .background(Color(0xFF111111))
+
             ){
-                Row {
+                ExtendedFloatingActionButton(
+                    containerColor = Color(0xFFC7EBB3),
+                    modifier = Modifier
+                        .padding(6.dp)
+                        .width(120.dp),
+                    shape = RoundedCornerShape(40.dp),
+                    onClick = {
 
-                    //save
-                    Box(
-                        modifier = Modifier
-                            .padding(6.dp)
-                            .fillMaxHeight()
-                            .width(100.dp)
-                            //.weight(0.5f)
-                            .clip(RoundedCornerShape(40.dp))
-                            .background(Color(0xFFC7EBB3))
-                            .clickable {
-                                viewModel.updateNote(
-                                    NotesData(
-                                        editNoteId,
-                                        noteName = viewModel.noteName,
-                                        noteText = viewModel.noteText
-                                    )
-                                )
-                                snackMes.value = "Update Saved"
-                                scope.launch { snackbarHostState.showSnackbar(snackMes.value) }
-
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text( text = "Save",
-                            color = Color(0xFF111111), // Text color for "Save"
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal)
-                    }
-
-                    //delete
-                   /* Box(
-                        modifier = Modifier
-                            .padding(vertical = 6.dp)
-                            .padding(end = 8.dp)
-                            .aspectRatio(1f)
-                            .clip(
-                                CircleShape
+                        viewModel.updateNote(
+                            NotesData(
+                                editNoteId,
+                                noteName = viewModel.noteName,
+                                noteText = viewModel.noteText
                             )
-                            .background(Color(0xff323430))
-                            .clickable {
+                        )
+                        snackMes.value = "Update Saved"
+                        scope.launch { snackbarHostState.showSnackbar(snackMes.value) }
 
-                                viewModel.deleteNote(NotesData(editNoteId,viewModel.noteName,viewModel.noteText))
-                                navController.popBackStack()
-
-
-                                //if (editNoteId != null) { viewModel.deleteNote(editNoteId)navController.popBackStack() }
-
-                            },
-                        contentAlignment = Alignment.Center
-                    )
-                    {
-                        Icon(imageVector = Delete, contentDescription = "", tint = statusBarColor)
-                    }*/
-
-                    //edit
-                    Box(
-                        modifier = Modifier
-                            .padding(vertical = 6.dp)
-                            .padding(end = 6.dp)
-                            .aspectRatio(1f)
-                            .clip(
-                                CircleShape
-                            )
-                            .background(Color(0xff323430))
-                            .clickable {
-                                ifEdit = !ifEdit
-                            },
-                        contentAlignment = Alignment.Center
-                    )
-                    {
-                        Icon(imageVector = Icons.Outlined.Edit, contentDescription = "", tint = statusBarColor)
-                    }
+                    }) {
+                    Text(text = "Save",
+                        color = Color(0xFF111111), // Text color for "Save"
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal)
+                }
+                FloatingActionButton(
+                    containerColor = Color(0xff323430),
+                    modifier = Modifier.padding(end=6.dp, top = 6.dp, bottom = 6.dp),
+                    shape = CircleShape,
+                    onClick = {ifEdit = !ifEdit }) {
+                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "", tint = statusBarColor)
                 }
             }
-
-
-
         },
-
-
-
-
+        floatingActionButtonPosition = FabPosition.Center
     )
 
 
