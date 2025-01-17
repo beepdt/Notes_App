@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                  HomeScreen(viewModel = NoteViewModel())
+                  MyApp()
                 }
             }
         }
@@ -47,12 +47,13 @@ fun MyApp(){
         startDestination = "home"
 
     ){
-        composable("home", enterTransition = { fadeIn(animationSpec = tween(250)) } ){ NotesUI(viewModel = noteViewModel,navController)}
+        composable("home", enterTransition = { fadeIn(animationSpec = tween(250)) } ){ NotesUI(viewModel = noteViewModel,navController) }
         composable("new note",enterTransition = { fadeIn(animationSpec = tween(250)) }){ NewNoteScreen(viewModel = noteViewModel, navController)}
         composable("editNote/{noteId}"){
             backStackEntry -> val noteId = backStackEntry.arguments?.getString("noteId")
             EditNoteScreen(viewModel = noteViewModel, navController = navController,noteId)
         }
+        composable("homeScreen"){ HomeScreen(viewModel = , navController = )}
     }
 
 }

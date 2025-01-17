@@ -209,6 +209,9 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
 
                       ){
                       Text(text = "all notes.", fontWeight = FontWeight.Bold, color = txtColor)
+                      IconButton(onClick = { /*TODO*/ }) {
+                          
+                      }
                   }
                       },
 
@@ -233,8 +236,11 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                       DropdownMenu(expanded = sort, onDismissRequest = { sort = false },Modifier.background(bgColor)) {
                           DropdownMenuItem(
                               text = { Text(text = "Descending", fontSize = 12.sp, fontWeight = FontWeight.Normal, fontFamily = customFont) },
-                              trailingIcon = { Icon(imageVector = Icons.Rounded.ArrowBack, modifier = Modifier.rotate(
-                                  270F).size(16.dp),contentDescription ="", tint = Color(0xff111111) )},
+                              trailingIcon = { Icon(imageVector = Icons.Rounded.ArrowBack, modifier = Modifier
+                                  .rotate(
+                                      270F
+                                  )
+                                  .size(16.dp),contentDescription ="", tint = Color(0xff111111) )},
                               onClick = {
                                   sortOrder = SortOrder.DESCENDING
                                   sort = false
@@ -242,8 +248,11 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                           )
                           DropdownMenuItem(
                               text = { Text(text = "Ascending", fontSize = 12.sp, fontWeight = FontWeight.Normal, fontFamily = customFont)},
-                              trailingIcon = { Icon(imageVector = Icons.Rounded.ArrowBack, modifier = Modifier.rotate(
-                                  90F).size(16.dp),contentDescription ="", tint =  Color(0xff111111))},
+                              trailingIcon = { Icon(imageVector = Icons.Rounded.ArrowBack, modifier = Modifier
+                                  .rotate(
+                                      90F
+                                  )
+                                  .size(16.dp),contentDescription ="", tint =  Color(0xff111111))},
                               onClick = {
                                   sortOrder = SortOrder.ASCENDING
                                   sort = false

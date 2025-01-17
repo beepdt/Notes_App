@@ -1,6 +1,7 @@
 package com.example.shoppinglist
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,18 +24,22 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.shoppinglist.ui.theme.customFont
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: NoteViewModel){
+fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
 
     val searchValue = mutableStateOf("")
+    val scrollState = rememberScrollState()
+    val noteList = viewModel.getRecentNotes.collectAsState(initial = listOf())
 
     Scaffold (
         topBar = {
@@ -47,8 +54,28 @@ fun HomeScreen(viewModel: NoteViewModel){
                  )
         },
 
-        content = {
-            
-        }
+       content = {
+           paddingValues ->
+           Column(
+               modifier = Modifier
+                   .fillMaxSize()
+                   .verticalScroll(scrollState).padding(paddingValues).padding(horizontal = 8.dp)
+           ) {
+              noteList.value.forEach {
+                  note->
+                  NotesItemUI(
+                      id = note.id,
+                      title = note.noteName,
+                      text = note.noteText,
+                      onDelete = { /*TODO*/ },
+                      navController = navController,
+                      isDark = false,
+                      isPinned = note.isPinned
+                  ) {
+
+                  }
+              }
+           }
+       }
     )
 }
