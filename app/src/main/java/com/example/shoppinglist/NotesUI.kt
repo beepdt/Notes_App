@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.DropdownMenu
@@ -209,8 +210,8 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
 
                       ){
                       Text(text = "all notes.", fontWeight = FontWeight.Bold, color = txtColor)
-                      IconButton(onClick = { /*TODO*/ }) {
-                          
+                      IconButton(onClick = { navController.navigate("homeScreen")}) {
+                          Icon(imageVector = Icons.Rounded.Home, contentDescription = "")
                       }
                   }
                       },

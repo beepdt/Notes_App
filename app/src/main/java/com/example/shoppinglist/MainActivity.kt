@@ -53,7 +53,7 @@ fun MyApp(){
             backStackEntry -> val noteId = backStackEntry.arguments?.getString("noteId")
             EditNoteScreen(viewModel = noteViewModel, navController = navController,noteId)
         }
-        composable("homeScreen"){ HomeScreen(viewModel = , navController = )}
+        composable("homeScreen"){ HomeScreen(viewModel = noteViewModel, navController = navController)}
     }
 
 }
