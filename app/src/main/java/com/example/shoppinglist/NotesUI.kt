@@ -569,7 +569,7 @@ fun NotesItemUI(
                     color = Color.Black,
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
-                    maxLines = if (boxExpanded) Int.MAX_VALUE else 6,
+                    maxLines = if (boxExpanded) Int.MAX_VALUE else 5,
                     overflow = TextOverflow.Ellipsis
                     )
             }
