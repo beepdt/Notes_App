@@ -25,6 +25,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -244,7 +245,7 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
                 TopAppBar(
 
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = statusBarColor,
+                        containerColor = MaterialTheme.colorScheme.background,
                     ),
 
                     navigationIcon = {
@@ -252,13 +253,13 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
                             modifier = Modifier
                                 .padding(8.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xff111111))
+                                .background(MaterialTheme.colorScheme.secondary)
                         ) {
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(
                                     imageVector = Icons.Rounded.ArrowBack,
                                     contentDescription = "back",
-                                    tint = Color(0xffFCF6F1)
+                                    tint = MaterialTheme.colorScheme.background
                                 )
 
                             }
@@ -277,7 +278,7 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
                             Text(
                                 text = "new note",
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xff111111),
+                                color = MaterialTheme.colorScheme.secondary,
                                 // fontSize = 16.sp
                             )
                         }
@@ -292,7 +293,7 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
             content = { paddingValues ->
                 Column(
                     modifier = Modifier
-                        .background(statusBarColor)
+                        .background(MaterialTheme.colorScheme.background)
                         .padding(paddingValues)
                         .fillMaxSize()
                         .verticalScroll(scrollState)
@@ -316,15 +317,15 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
                         ),
                         placeholder = { Text(text = "Title", fontWeight = FontWeight.Normal) },
                         colors = TextFieldDefaults.colors(
-                            focusedTextColor = Color(0xff111111),
+                            focusedTextColor = MaterialTheme.colorScheme.secondary,
                             focusedContainerColor = Color.Transparent,
-                            focusedPlaceholderColor = Color.Black,
-                            focusedIndicatorColor = Color.Black,
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
+                            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
                             unfocusedContainerColor = Color.Transparent,
-                            unfocusedTextColor = Color.DarkGray,
-                            unfocusedPlaceholderColor = Color.DarkGray,
-                            unfocusedIndicatorColor = Color.DarkGray,
-                            cursorColor = Color.DarkGray
+                            unfocusedTextColor = MaterialTheme.colorScheme.secondary,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                            cursorColor = Color.Transparent
                         )
 
 
@@ -344,15 +345,15 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
                         ),
                         placeholder = { Text(text = "Note") },
                         colors = TextFieldDefaults.colors(
-                            focusedTextColor = Color(0xff111111),
+                            focusedTextColor = MaterialTheme.colorScheme.secondary,
                             focusedContainerColor = Color.Transparent,
-                            focusedPlaceholderColor = Color.Black,
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
                             focusedIndicatorColor = Color.Transparent,
-                            cursorColor = Color.DarkGray,
                             unfocusedContainerColor = Color.Transparent,
-                            unfocusedTextColor = Color.DarkGray,
-                            unfocusedPlaceholderColor = Color.DarkGray,
-                            unfocusedIndicatorColor = Color.Transparent
+                            unfocusedTextColor = MaterialTheme.colorScheme.secondary,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            cursorColor = MaterialTheme.colorScheme.secondary
                         )
                     )
 
@@ -366,7 +367,7 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
                         .padding(8.dp)
                         .height(64.dp)
                         .clip(RoundedCornerShape(48.dp))
-                        .background(Color(0xFF111111))
+                        .background(MaterialTheme.colorScheme.onSecondary)
 
                 ) {
                     ExtendedFloatingActionButton(
@@ -405,7 +406,7 @@ fun NewNoteScreen(viewModel: NoteViewModel,navController: NavHostController){
                         )
                     }
                     FloatingActionButton(
-                        containerColor = Color(0xff323430),
+                        containerColor = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.padding(end = 6.dp, top = 6.dp, bottom = 6.dp),
                         shape = CircleShape,
                         onClick = {

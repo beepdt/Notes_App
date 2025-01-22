@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.DropdownMenu
@@ -37,15 +36,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismiss
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -159,7 +155,6 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
         radioButtonAsc = true
     }
 
-    val bgColor = MaterialTheme.colorScheme.background
 
 
    // val notes = viewModel.notesData //observe state of shoppingData data class
@@ -186,7 +181,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                                 .clip(CircleShape)
                                 .background(MaterialTheme.colorScheme.secondary)
                         ) {
-                            IconButton(onClick = { }) {
+                            IconButton(onClick = {navController.popBackStack() }) {
                                 Icon(
                                     imageVector = Icons.Rounded.ArrowBack,
                                     contentDescription = "back",
@@ -212,13 +207,6 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.secondary
                             )
-                            IconButton(onClick = { navController.navigate("homeScreen") }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Home,
-                                    contentDescription = "",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
                         }
                     },
 
@@ -304,23 +292,6 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                                     sort = false
                                 }
                             )
-                            DropdownMenuItem(
-                                text = {
-                                       Switch(
-                                           checked = isDarkMode,
-                                           onCheckedChange = {
-                                               scope.launch {
-                                                   viewModel.toggleTheme()
-                                               }
-                                           },
-                                           colors = SwitchDefaults.colors(
-                                               checkedThumbColor = MaterialTheme.colorScheme.secondary,
-                                               checkedTrackColor = MaterialTheme.colorScheme.primary
-                                           )
-                                           )
-                                },
-                                onClick = { /*TODO*/ }
-                            )
                         }
 
 
@@ -340,7 +311,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                     //.verticalScroll(rememberScrollState())
                 ) {
 
-                    val scope = rememberCoroutineScope()
+
 
 
 
@@ -424,7 +395,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                                                     viewModel.deleteNote(note)
                                                 },
                                                 navController = navController,
-
+                                                showPin = true,
                                                 isPinned = note.isPinned,
                                                 onEdit = {
                                                     viewModel.isPinned = !viewModel.isPinned
@@ -515,7 +486,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                                                 viewModel.deleteNote(note)
                                             },
                                             navController = navController,
-
+                                            showPin = true,
                                             isPinned = note.isPinned,
                                             onEdit = {
                                                 viewModel.isPinned = !viewModel.isPinned
@@ -551,13 +522,13 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
-                            .background(Color(0xff323430))
+                            .background(MaterialTheme.colorScheme.surface)
                             .size(48.dp)
                     )
                     Icon(
                         imageVector = Icons.Rounded.Add,
                         contentDescription = "add new item",
-                        tint = Color(0xffFCF6F1),
+                        tint = MaterialTheme.colorScheme.background,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -579,7 +550,7 @@ fun NotesItemUI(
     text: String,
     onDelete: () -> Unit,
     navController: NavHostController,
-
+    showPin: Boolean,
     isPinned: Boolean,
     onEdit:()-> Unit
 
@@ -666,18 +637,29 @@ fun NotesItemUI(
                 horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-
-                Box {
-                    Box(modifier = Modifier
-                        .clickable { onEdit() }
-                        .wrapContentSize(), contentAlignment = Alignment.Center){
-                        if (!isPinned){
-                            Icon(imageVector = Bookmark, contentDescription = "", tint =MaterialTheme.colorScheme.secondary )
-                        }else{
-                            Icon(imageVector = BookmarkFilled, contentDescription = "",Modifier.size(20.dp),tint =MaterialTheme.colorScheme.secondary)
+                if (showPin) {
+                    Box {
+                        Box(modifier = Modifier
+                            .clickable { onEdit() }
+                            .wrapContentSize(), contentAlignment = Alignment.Center) {
+                            if (!isPinned) {
+                                Icon(
+                                    imageVector = Bookmark,
+                                    contentDescription = "",
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = BookmarkFilled,
+                                    contentDescription = "",
+                                    Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            }
                         }
                     }
                 }
+
             }
 
         }

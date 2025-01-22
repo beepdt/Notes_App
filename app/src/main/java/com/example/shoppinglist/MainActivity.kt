@@ -71,13 +71,13 @@ fun MyApp(noteViewModel: NoteViewModel){
         startDestination = "home"
 
     ){
-        composable("home", enterTransition = { fadeIn(animationSpec = tween(250)) } ){ NotesUI(viewModel = noteViewModel,navController) }
+        composable("home", enterTransition = { fadeIn(animationSpec = tween(250)) } ){ HomeScreen(viewModel = noteViewModel,navController) }
         composable("new note",enterTransition = { fadeIn(animationSpec = tween(250)) }){ NewNoteScreen(viewModel = noteViewModel, navController)}
         composable("editNote/{noteId}"){
             backStackEntry -> val noteId = backStackEntry.arguments?.getString("noteId")
             EditNoteScreen(viewModel = noteViewModel, navController = navController,noteId)
         }
-        composable("homeScreen"){ HomeScreen(viewModel = noteViewModel, navController = navController)}
+        composable("allNotes"){ NotesUI(viewModel = noteViewModel, navController = navController) }
     }
 
 }
