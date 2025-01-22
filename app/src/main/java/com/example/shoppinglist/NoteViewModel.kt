@@ -2,17 +2,32 @@ package com.example.shoppinglist
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.shoppinglist.ui.theme.IS_DARK_MODE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class NoteViewModel(
+    private val dataStore: DataStore<Preferences>,
     private val noteRepository: NoteRepository = Graph.noteRepository
 ): ViewModel() {
+
+    val isDarkMode: Flow<Boolean> = dataStore.data.map {preferences->
+        preferences[IS_DARK_MODE] ?: false
+    }
+    suspend fun toggleTheme(){
+        dataStore.edit { preferences ->
+            val current = preferences[IS_DARK_MODE] ?: false
+            preferences[IS_DARK_MODE] = !current
+        }
+    }
 
     var noteName by mutableStateOf("")
     var noteText by   mutableStateOf("")

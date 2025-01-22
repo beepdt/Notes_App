@@ -34,8 +34,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -63,11 +66,10 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.example.shoppinglist.ui.theme.AppTheme
 import com.example.shoppinglist.ui.theme.customFont
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
@@ -122,18 +124,15 @@ private var _Sort: ImageVector? = null
 @Composable
 fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
 
-    val isDark by remember { mutableStateOf(false) }
+   val isDarkMode by viewModel.isDarkMode.collectAsState(initial = false)
+    val scope = rememberCoroutineScope()
+    
+    
     viewModel.isPinned = false
 
     //var isClicked by remember { mutableStateOf(false) }
 
-    val bgColor = if (!isDark) {
-        Color(0xffFCF6F1)
-    } else Color(0xff141414)
 
-    val txtColor = if (!isDark) {
-        Color(0xff111111)
-    } else Color(0xffFCF6F1)
 
     /*val tileColor = if(!isDark){
         Color(0xFFC7EBB3)
@@ -160,167 +159,320 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
         radioButtonAsc = true
     }
 
+    val bgColor = MaterialTheme.colorScheme.background
 
 
    // val notes = viewModel.notesData //observe state of shoppingData data class
 
-    LaunchedEffect(Unit){
-    systemUIController.setStatusBarColor(
-        color = bgColor,
-        darkIcons = true
-    )}
 
 
 
-    Scaffold(
 
-      topBar = {
+    AppTheme(darkTheme = isDarkMode){
+        Scaffold(
 
-
-          TopAppBar(
-              colors = topAppBarColors(
-                  containerColor = bgColor,
-              ),
-
-              navigationIcon = {
-                  Box(modifier = Modifier
-                      .padding(8.dp)
-                      .clip(CircleShape)
-                      .background(Color(0xff111111))) {
-                      IconButton(onClick = {  }) {
-                          Icon(
-                              imageVector = Icons.Rounded.ArrowBack,
-                              contentDescription = "back",
-                              tint = Color(0xffFCF6F1)
-                          )
-
-                      }
-                  }
-              },
+            topBar = {
 
 
+                TopAppBar(
+                    colors = topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                    ),
 
-              title = {
-                  Row (
-                      Modifier
-                          .fillMaxWidth()
-                          .padding(end = 8.dp),
-                      verticalAlignment = Alignment.CenterVertically,
-                      horizontalArrangement = Arrangement.Center
+                    navigationIcon = {
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.secondary)
+                        ) {
+                            IconButton(onClick = { }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.ArrowBack,
+                                    contentDescription = "back",
+                                    tint = MaterialTheme.colorScheme.background
+                                )
 
-                      ){
-                      Text(text = "all notes.", fontWeight = FontWeight.Bold, color = txtColor)
-                      IconButton(onClick = { navController.navigate("homeScreen")}) {
-                          Icon(imageVector = Icons.Rounded.Home, contentDescription = "")
-                      }
-                  }
-                      },
-
-              scrollBehavior = scrollBehavior,
-              
-              actions = {
-                  Box(modifier = Modifier
-                      .padding(8.dp)
-                      .size(48.dp)
-                      //.border(width = 0.5.dp, color =Color(0xff111111))
-                      .clip(CircleShape)
-                      //.border(width = 0.5.dp, color =Color(0xff111111))
-                      .background(Color(0xff111111))
-                      .clickable {
-                          sort = !sort
-                      },
-                      contentAlignment = Alignment.Center
-                  ){
-                      Icon(imageVector = Sort, contentDescription = "", tint = bgColor)
-                  }
-
-                      DropdownMenu(expanded = sort, onDismissRequest = { sort = false },Modifier.background(bgColor)) {
-                          DropdownMenuItem(
-                              text = { Text(text = "Descending", fontSize = 12.sp, fontWeight = FontWeight.Normal, fontFamily = customFont) },
-                              trailingIcon = { Icon(imageVector = Icons.Rounded.ArrowBack, modifier = Modifier
-                                  .rotate(
-                                      270F
-                                  )
-                                  .size(16.dp),contentDescription ="", tint = Color(0xff111111) )},
-                              onClick = {
-                                  sortOrder = SortOrder.DESCENDING
-                                  sort = false
-                              }
-                          )
-                          DropdownMenuItem(
-                              text = { Text(text = "Ascending", fontSize = 12.sp, fontWeight = FontWeight.Normal, fontFamily = customFont)},
-                              trailingIcon = { Icon(imageVector = Icons.Rounded.ArrowBack, modifier = Modifier
-                                  .rotate(
-                                      90F
-                                  )
-                                  .size(16.dp),contentDescription ="", tint =  Color(0xff111111))},
-                              onClick = {
-                                  sortOrder = SortOrder.ASCENDING
-                                  sort = false
-                              }
-                          )
-                      }
-
-                  
-              }
-              
-              )
-      },
-        
+                            }
+                        }
+                    },
 
 
-        //main body
-        content = {
-            paddingValues ->
-            Column(
-                Modifier
-                    .background(bgColor)
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    //.verticalScroll(rememberScrollState())
-                ) {
-                
-                val scope = rememberCoroutineScope()
+                    title = {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(end = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
 
-
-
-                LazyColumn(
-                    //verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 8.dp)
-                        //.nestedScroll(scrollBehavior.nestedScrollConnection),
-
-                    //contentPadding = paddingValues,
-
-                ){
-                    val pinnedNotes = noteList.value.filter { it.isPinned }
-                    when {
-                        pinnedNotes.isNotEmpty() -> {
-                            item {
-                                Text(
-                                    text = "Pinned",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp,
-                                    color = txtColor,
-                                    modifier = Modifier.padding(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = "all notes.",
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                            IconButton(onClick = { navController.navigate("homeScreen") }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Home,
+                                    contentDescription = "",
+                                    tint = MaterialTheme.colorScheme.secondary
                                 )
                             }
-                            items(pinnedNotes,key={note-> note.id}){note->
+                        }
+                    },
+
+                    scrollBehavior = scrollBehavior,
+
+                    actions = {
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .size(48.dp)
+                                //.border(width = 0.5.dp, color =Color(0xff111111))
+                                .clip(CircleShape)
+                                //.border(width = 0.5.dp, color =Color(0xff111111))
+                                .background(MaterialTheme.colorScheme.secondary)
+                                .clickable {
+                                    sort = !sort
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Sort,
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.background
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = sort,
+                            onDismissRequest = { sort = false },
+                            Modifier.background(MaterialTheme.colorScheme.background)
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "Descending",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        fontFamily = customFont,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Rounded.ArrowBack,
+                                        modifier = Modifier
+                                            .rotate(
+                                                270F
+                                            )
+                                            .size(16.dp),
+                                        contentDescription = "",
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
+                                },
+                                onClick = {
+                                    sortOrder = SortOrder.DESCENDING
+                                    sort = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "Ascending",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        fontFamily = customFont,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Rounded.ArrowBack,
+                                        modifier = Modifier
+                                            .rotate(
+                                                90F
+                                            )
+                                            .size(16.dp),
+                                        contentDescription = "",
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
+                                },
+                                onClick = {
+                                    sortOrder = SortOrder.ASCENDING
+                                    sort = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                       Switch(
+                                           checked = isDarkMode,
+                                           onCheckedChange = {
+                                               scope.launch {
+                                                   viewModel.toggleTheme()
+                                               }
+                                           },
+                                           colors = SwitchDefaults.colors(
+                                               checkedThumbColor = MaterialTheme.colorScheme.secondary,
+                                               checkedTrackColor = MaterialTheme.colorScheme.primary
+                                           )
+                                           )
+                                },
+                                onClick = { /*TODO*/ }
+                            )
+                        }
+
+
+                    }
+
+                )
+            },
+
+
+            //main body
+            content = { paddingValues ->
+                Column(
+                    Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                    //.verticalScroll(rememberScrollState())
+                ) {
+
+                    val scope = rememberCoroutineScope()
+
+
+
+                    LazyColumn(
+                        //verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp, vertical = 8.dp)
+                        //.nestedScroll(scrollBehavior.nestedScrollConnection),
+
+                        //contentPadding = paddingValues,
+
+                    ) {
+                        val pinnedNotes = noteList.value.filter { it.isPinned }
+                        when {
+                            pinnedNotes.isNotEmpty() -> {
+                                item {
+                                    Text(
+                                        text = "Pinned",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                }
+                                items(pinnedNotes, key = { note -> note.id }) { note ->
+                                    val dismissState = rememberDismissState(
+                                        positionalThreshold = { totalDistance -> totalDistance * 0.4f },
+                                        confirmValueChange = { dismissValue ->
+                                            when (dismissValue) {
+                                                DismissValue.DismissedToEnd -> {
+                                                    scope.launch {
+                                                        try {
+                                                            viewModel.deleteNote(note)
+                                                            true
+                                                        } catch (e: Exception) {
+                                                            false
+                                                        }
+                                                    }
+                                                    true
+                                                }
+
+                                                DismissValue.DismissedToStart -> false
+                                                DismissValue.Default -> false
+                                            }
+
+                                        }
+                                    )
+                                    SwipeToDismiss(
+                                        state = dismissState,
+                                        directions = setOf(DismissDirection.StartToEnd),
+                                        background = {
+
+                                            val color = Color(0xff1E1E1E)
+
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(vertical = 8.dp)
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .fillMaxSize()
+                                                    .background(color),
+                                                contentAlignment = Alignment.CenterStart
+                                            ) {
+                                                if (dismissState.dismissDirection == DismissDirection.StartToEnd) {
+                                                    Icon(
+                                                        imageVector = Delete,
+                                                        contentDescription = "",
+                                                        modifier = Modifier.padding(start = 16.dp),
+                                                        tint = MaterialTheme.colorScheme.background
+                                                    )
+                                                }
+                                            }
+                                        },
+                                        dismissContent = {
+
+                                            NotesItemUI(
+
+                                                id = note.id,
+                                                title = note.noteName,
+                                                text = note.noteText,
+                                                onDelete = {
+                                                    viewModel.deleteNote(note)
+                                                },
+                                                navController = navController,
+
+                                                isPinned = note.isPinned,
+                                                onEdit = {
+                                                    viewModel.isPinned = !viewModel.isPinned
+                                                    viewModel.updateNote(
+                                                        NotesData(
+                                                            id = note.id,
+                                                            noteName = note.noteName,
+                                                            noteText = note.noteText,
+                                                            isPinned = viewModel.isPinned
+                                                        )
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        val unpinnedNotes = noteList.value.filterNot { it.isPinned }
+                        if (unpinnedNotes.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text = "Others",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                                )
+                            }
+                            items(unpinnedNotes, key = { note -> note.id }) { note ->
+
+
                                 val dismissState = rememberDismissState(
                                     positionalThreshold = { totalDistance -> totalDistance * 0.4f },
                                     confirmValueChange = { dismissValue ->
-                                        when(dismissValue){
-                                            DismissValue.DismissedToEnd->{
+                                        when (dismissValue) {
+                                            DismissValue.DismissedToEnd -> {
                                                 scope.launch {
-                                                    try{
+                                                    try {
                                                         viewModel.deleteNote(note)
                                                         true
-                                                    }catch (e: Exception){
+                                                    } catch (e: Exception) {
                                                         false
                                                     }
                                                 }
                                                 true
                                             }
+
                                             DismissValue.DismissedToStart -> false
                                             DismissValue.Default -> false
                                         }
@@ -334,13 +486,22 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
 
                                         val color = Color(0xff1E1E1E)
 
-                                        Box(modifier = Modifier
-                                            .padding(vertical = 8.dp)
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .fillMaxSize()
-                                            .background(color),
-                                            contentAlignment = Alignment.CenterStart){
-                                            if (dismissState.dismissDirection == DismissDirection.StartToEnd){Icon(imageVector = Delete, contentDescription ="",modifier = Modifier.padding(start = 16.dp),tint = bgColor ) }
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(vertical = 8.dp)
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .fillMaxSize()
+                                                .background(color),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            if (dismissState.dismissDirection == DismissDirection.StartToEnd) {
+                                                Icon(
+                                                    imageVector = Delete,
+                                                    contentDescription = "",
+                                                    modifier = Modifier.padding(start = 16.dp),
+                                                    tint = MaterialTheme.colorScheme.background
+                                                )
+                                            }
                                         }
                                     },
                                     dismissContent = {
@@ -354,7 +515,7 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                                                 viewModel.deleteNote(note)
                                             },
                                             navController = navController,
-                                            isDark = isDark,
+
                                             isPinned = note.isPinned,
                                             onEdit = {
                                                 viewModel.isPinned = !viewModel.isPinned
@@ -373,112 +534,36 @@ fun NotesUI(viewModel: NoteViewModel,navController: NavHostController) {
                             }
                         }
                     }
-                    val unpinnedNotes = noteList.value.filterNot { it.isPinned }
-                    if (unpinnedNotes.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = "Others",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
-                                color = txtColor,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                            )
-                        }
-                        items(unpinnedNotes,key = {note-> note.id}){note->
-
-
-                            val dismissState = rememberDismissState(
-                                positionalThreshold = { totalDistance -> totalDistance * 0.4f },
-                                confirmValueChange = { dismissValue ->
-                                    when(dismissValue){
-                                        DismissValue.DismissedToEnd->{
-                                            scope.launch {
-                                                try{
-                                                    viewModel.deleteNote(note)
-                                                    true
-                                                }catch (e: Exception){
-                                                    false
-                                                }
-                                            }
-                                            true
-                                        }
-                                        DismissValue.DismissedToStart -> false
-                                        DismissValue.Default -> false
-                                    }
-
-                                }
-                            )
-                            SwipeToDismiss(
-                                state = dismissState,
-                                directions = setOf(DismissDirection.StartToEnd),
-                                background = {
-
-                                    val color = Color(0xff1E1E1E)
-
-                                    Box(modifier = Modifier
-                                        .padding(vertical = 8.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .fillMaxSize()
-                                        .background(color),
-                                        contentAlignment = Alignment.CenterStart){
-                                        if (dismissState.dismissDirection == DismissDirection.StartToEnd){Icon(imageVector = Delete, contentDescription ="",modifier = Modifier.padding(start = 16.dp),tint = bgColor ) }
-                                    }
-                                },
-                                dismissContent = {
-
-                                    NotesItemUI(
-
-                                        id = note.id,
-                                        title = note.noteName,
-                                        text = note.noteText,
-                                        onDelete = {
-                                            viewModel.deleteNote(note)
-                                        },
-                                        navController = navController,
-                                        isDark = isDark,
-                                        isPinned = note.isPinned,
-                                        onEdit = {
-                                            viewModel.isPinned = !viewModel.isPinned
-                                            viewModel.updateNote(
-                                                NotesData(
-                                                    id = note.id,
-                                                    noteName = note.noteName,
-                                                    noteText = note.noteText,
-                                                    isPinned = viewModel.isPinned
-                                                )
-                                            )
-                                        }
-                                    )
-                                }
-                            )
-                        }
-                    }
                 }
-            }
-        },
+            },
 
 
-
-
-
-        //for adding new items
-        floatingActionButton = {
+            //for adding new items
+            floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
                         navController.navigate("new note")
-                              },
-                    containerColor = Color(0xff111111),
+                    },
+                    containerColor = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.size(64.dp),
                     shape = CircleShape
                 ) {
-                    Box(modifier = Modifier
-                        .clip(CircleShape)
-                        .background(Color(0xff323430))
-                        .size(48.dp))
-                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "add new item",tint = Color(0xffFCF6F1), modifier = Modifier.size(24.dp))
-            }
-        },
-    )
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(Color(0xff323430))
+                            .size(48.dp)
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = "add new item",
+                        tint = Color(0xffFCF6F1),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            },
+        )
+    }
 }
 
 
@@ -494,15 +579,13 @@ fun NotesItemUI(
     text: String,
     onDelete: () -> Unit,
     navController: NavHostController,
-    isDark: Boolean,
+
     isPinned: Boolean,
     onEdit:()-> Unit
 
 
 ) {
-    val tileColor = if(!isDark){
-        Color(0xFFC7EBB3)
-    } else  Color(0xff1E1E1E)
+
 
     val boxExpanded by remember{ mutableStateOf(false) }
 
@@ -515,7 +598,7 @@ fun NotesItemUI(
     Box(modifier = Modifier
         .padding(vertical = 8.dp)
         .clip(RoundedCornerShape(8.dp))
-        .background(tileColor)
+        .background(MaterialTheme.colorScheme.primary)
         //.border(width = 0.5.dp, color = Color.LightGray)
         .fillMaxWidth()
         .animateContentSize()
@@ -559,14 +642,14 @@ fun NotesItemUI(
             {
 
                 Text(text =if (title=="")"Untitled" else title,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.secondary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 32.sp,
                     lineHeight = 40.sp)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = text,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.secondary,
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
                     maxLines = if (boxExpanded) Int.MAX_VALUE else 5,
@@ -589,9 +672,9 @@ fun NotesItemUI(
                         .clickable { onEdit() }
                         .wrapContentSize(), contentAlignment = Alignment.Center){
                         if (!isPinned){
-                            Icon(imageVector = Bookmark, contentDescription = "", tint =Color(0xff111111) )
+                            Icon(imageVector = Bookmark, contentDescription = "", tint =MaterialTheme.colorScheme.secondary )
                         }else{
-                            Icon(imageVector = BookmarkFilled, contentDescription = "",Modifier.size(20.dp),tint =Color(0xff111111))
+                            Icon(imageVector = BookmarkFilled, contentDescription = "",Modifier.size(20.dp),tint =MaterialTheme.colorScheme.secondary)
                         }
                     }
                 }
@@ -608,11 +691,7 @@ enum class SortOrder{
     DESCENDING
 }
 
-@Composable
-@Preview
-fun NotesUIPreview(){
-    NotesUI(viewModel = NoteViewModel(), navController = rememberNavController())
-}
+
 
 
 

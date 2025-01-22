@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.shoppinglist.ui.theme.AppTheme
 import com.example.shoppinglist.ui.theme.customFont
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
@@ -69,6 +70,7 @@ import java.util.concurrent.Flow
 fun Categories(viewModel: NoteViewModel){
 
 
+    val isDarkMode by viewModel.isDarkMode.collectAsState(initial = false)
     val colors = listOf(Color(0xFFC7EBB3),Color(0xFFa2e494),Color(0xFFe7efda),Color(0xFFcadbb7))
     viewModel.categoryName = ""
     val systemUIController = rememberSystemUiController()
@@ -95,100 +97,114 @@ fun Categories(viewModel: NoteViewModel){
             )
     }
 
-    LaunchedEffect(Unit){
-        systemUIController.setStatusBarColor(
-            color = Color(0xffFCF6F1),
-            darkIcons = true
-        )}
 
 
 
-    Scaffold (
+    AppTheme(darkTheme = isDarkMode) {
+        Scaffold(
 
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(Color(0xffFCF6F1)),
+            topBar = {
+                TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(Color(0xffFCF6F1)),
 
-                navigationIcon = {
-                    Box(modifier = Modifier
-                        .padding(8.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xff111111))
-                    ){
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = "", tint = Color.White)
-                        }
-                    }
-                },
-
-                title = {
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        //.padding(end = 8.dp)
-                        .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End
-                    ){
-                        //Text(text = "All Categories ")
-                        Box(contentAlignment = Alignment.Center,
+                    navigationIcon = {
+                        Box(
                             modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .height(40.dp)
-                                .wrapContentWidth()
-                                .clip(RoundedCornerShape(24.dp))
+                                .padding(8.dp)
+                                .clip(CircleShape)
                                 .background(Color(0xff111111))
-                                .clickable { isEnabled = !isEnabled }
                         ) {
-                            Row(modifier = Modifier.padding(start = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ){
-                                Text(text = "category", fontFamily = customFont, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White)
-                                Box(contentAlignment = Alignment.Center,
-                                   modifier = Modifier
-                                       .padding(4.dp)
-                                       .clip(CircleShape)
-                                       .size(30.dp)
-                                       .background(Color(0xff323430))
-                                ){ Icon(imageVector = Icons.Rounded.Add, contentDescription = "", tint = Color(0xffFCF6F1)) }
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.ArrowBack,
+                                    contentDescription = "",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                    },
+
+                    title = {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                //.padding(end = 8.dp)
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            //Text(text = "All Categories ")
+                            Box(contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                                    .height(40.dp)
+                                    .wrapContentWidth()
+                                    .clip(RoundedCornerShape(24.dp))
+                                    .background(Color(0xff111111))
+                                    .clickable { isEnabled = !isEnabled }
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "category",
+                                        fontFamily = customFont,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        color = Color.White
+                                    )
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                            .clip(CircleShape)
+                                            .size(30.dp)
+                                            .background(Color(0xff323430))
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Add,
+                                            contentDescription = "",
+                                            tint = Color(0xffFCF6F1)
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            
-            )
-        },
+
+                )
+            },
 
 
+            content = { paddingValues ->
 
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(Color(0xffFCF6F1))
+                ) {
 
-        content = {
-            paddingValues ->
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 160.dp),
+                        Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
+                        items(categoryList.value) { category ->
+                            CategoryItem(
+                                id = category.categoryId,
+                                text = category.categoryName,
+                                color = colors.random()
+                            )
 
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(Color(0xffFCF6F1))
-            ) {
-
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 160.dp),
-                    Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                ){
-                    items(categoryList.value){category->
-                        CategoryItem(
-                            id = category.categoryId,
-                            text = category.categoryName,
-                            color = colors.random()
-                        )
-
+                        }
                     }
                 }
             }
-        }
 
-    )
+        )
+    }
 }
 
 @Composable
