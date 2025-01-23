@@ -93,7 +93,7 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
 
 
 
-    AppTheme(darkTheme = isDarkMode) {
+
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
 
@@ -255,7 +255,7 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
 
                 ) {
                     ExtendedFloatingActionButton(
-                        containerColor = Color(0xFFC7EBB3),
+                        containerColor = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier
                             .padding(6.dp)
                             .width(120.dp),
@@ -275,7 +275,7 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
                         }) {
                         Text(
                             text = "Save",
-                            color = Color(0xFF111111), // Text color for "Save"
+                            color = MaterialTheme.colorScheme.secondary, // Text color for "Save"
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal
                         )
@@ -295,7 +295,7 @@ fun EditNoteScreen(viewModel: NoteViewModel,navController:NavHostController,note
             },
             floatingActionButtonPosition = FabPosition.Center
         )
-    }
+
 
 
 

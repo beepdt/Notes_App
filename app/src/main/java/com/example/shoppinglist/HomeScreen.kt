@@ -2,6 +2,7 @@ package com.example.shoppinglist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,8 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -205,14 +204,14 @@ private var _Dark_mode: ImageVector? = null
 @Composable
 fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
 
-    val isDarkMode by viewModel.isDarkMode.collectAsState(initial = false)
+    val isDarkMode by viewModel.isDarkMode.collectAsState(initial = isSystemInDarkTheme())
     val scope = rememberCoroutineScope()
 
     val searchValue = mutableStateOf("")
     val scrollState = rememberScrollState()
     val noteList = viewModel.getRecentNotes.collectAsState(initial = listOf())
 
-    AppTheme(darkTheme = isDarkMode) {
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -220,7 +219,8 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                         Text(
                             text = "Scribbl",
                             fontWeight = FontWeight.Bold,
-                            fontFamily = customFont
+                            fontFamily = customFont,
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     },
                     actions = {
@@ -269,7 +269,7 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                             .clip(RoundedCornerShape(8.dp))
                             .height(200.dp)
                             .weight(.5f)
-                            .background(MaterialTheme.colorScheme.onBackground),
+                            .background(Color(0xff1B3022)),
                             contentAlignment = Alignment.BottomStart) {
                             Text(
                                 text = "Notes",
@@ -277,7 +277,7 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = customFont,
                                 fontSize = 30.sp,
-                                color = MaterialTheme.colorScheme.secondary
+                                color = Color(0xffFCF6F1)
                             )
                         }
 
@@ -286,10 +286,11 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                         Column(Modifier.weight(0.5f)) {
                             Box(
                                 modifier = Modifier
+                                    .clickable { navController.navigate("allCategories") }
                                     .clip(RoundedCornerShape(8.dp))
                                     .fillMaxWidth()
                                     .height(100.dp)
-                                    .background(MaterialTheme.colorScheme.primary),
+                                    .background(Color(0xff47A025)),
                                 contentAlignment = Alignment.BottomStart
                             ) {
                                 Text(
@@ -298,7 +299,7 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = customFont,
                                     fontSize = 20.sp,
-                                    color = MaterialTheme.colorScheme.secondary
+                                    color = Color(0xffFCF6F1)
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
@@ -306,17 +307,19 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                             Row {
                                 Box(
                                     Modifier
+                                        .clickable { navController.navigate("favScreen") }
                                         .clip(RoundedCornerShape(8.dp))
                                         .weight(0.5f)
+                                        .height(96.dp)
                                         .aspectRatio(1f)
-                                        .background(Color.Yellow),
+                                        .background(Color(0xff2C423F)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Rounded.Favorite,
+                                        imageVector = BookmarkFilled,
                                         contentDescription = "",
                                         modifier = Modifier.size(32.dp),
-                                        tint = MaterialTheme.colorScheme.secondary
+                                        tint = MaterialTheme.colorScheme.background
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(4.dp))
@@ -324,15 +327,16 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(8.dp))
                                         .weight(0.5f)
+                                        .height(96.dp)
                                         .aspectRatio(1f)
-                                        .background(Color.Red),
+                                        .background(Color(0xff1B3022)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Delete,
                                         contentDescription = "",
                                         modifier = Modifier.size(32.dp),
-                                        tint = MaterialTheme.colorScheme.secondary
+                                        tint = Color(0xffFCF6F1)
                                     )
                                 }
                             }
@@ -368,5 +372,5 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                 }
             }
         )
-    }
+
 }
