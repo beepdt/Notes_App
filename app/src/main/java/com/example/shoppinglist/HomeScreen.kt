@@ -15,9 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -209,6 +213,7 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
 
     val searchValue = mutableStateOf("")
     val scrollState = rememberScrollState()
+
     val noteList = viewModel.getRecentNotes.collectAsState(initial = listOf())
 
 
@@ -311,34 +316,20 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                                         .clip(RoundedCornerShape(8.dp))
                                         .weight(0.5f)
                                         .height(96.dp)
-                                        .aspectRatio(1f)
+                                        //.aspectRatio(1f)
                                         .background(Color(0xff2C423F)),
-                                    contentAlignment = Alignment.Center
+                                    contentAlignment = Alignment.BottomStart
                                 ) {
-                                    Icon(
-                                        imageVector = BookmarkFilled,
-                                        contentDescription = "",
-                                        modifier = Modifier.size(32.dp),
-                                        tint = MaterialTheme.colorScheme.background
-                                    )
+                                    Text(
+                                        text = "Bookmarks",
+                                        modifier = Modifier.padding(start = 8.dp, bottom = 4.dp),
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = customFont,
+                                        fontSize = 20.sp,
+                                        color = Color(0xffFCF6F1)
+                                        )
                                 }
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .weight(0.5f)
-                                        .height(96.dp)
-                                        .aspectRatio(1f)
-                                        .background(Color(0xff1B3022)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Delete,
-                                        contentDescription = "",
-                                        modifier = Modifier.size(32.dp),
-                                        tint = Color(0xffFCF6F1)
-                                    )
-                                }
+
                             }
                         }
                     }
@@ -369,6 +360,30 @@ fun HomeScreen(viewModel: NoteViewModel, navController: NavHostController){
                         }
                     }
 
+                }
+            },
+
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate("new note")
+                    },
+                    containerColor = Color(0xff1B3022),
+                    modifier = Modifier.size(64.dp),
+                    shape = CircleShape
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(Color(0xff1B3022))
+                            .size(48.dp)
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = "add new item",
+                        tint = Color(0xFFDDFFD9),
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             }
         )
